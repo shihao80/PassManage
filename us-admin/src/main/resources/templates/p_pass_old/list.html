@@ -1,0 +1,93 @@
+<!--
+代码为自动生成 Created by www.magicalcoder.com
+ 软件作者：何栋宇 qq:709876443
+ 如果你改变了此类 read 请将此行删除
+ 欢迎加入官方QQ群:648595928
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  th:include="magicalcoder/v103/include/head :: commonHead('p_pass_old列表')"/>
+<body class="childrenBody">
+<!--请不要删除magicaldrag注释标签，可以配合布局器进行联动布局-->
+<!--magicaldrag-->
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">查询条件</div>
+                    <div class="layui-card-body">
+                        <form class="layui-form queryForm security_list_query_form">
+                            <div class="layui-form-item">
+                                <div class="layui-inline security_list_query_param_passId">
+                                    <input type="text" class="layui-input" data-name="passId" name="passIdFirst" placeholder="密钥UUID" />
+                                </div>
+                                <div class="layui-inline security_list_query_param_passName">
+                                    <input type="text" class="layui-input" data-name="passName" name="passNameFirst" placeholder="密钥名称" />
+                                </div>
+                                <div class="layui-inline security_list_query_param_passLength">
+                                    <input type="text" class="layui-input" data-name="passLength" name="passLengthFirst" placeholder="密钥长度" />
+                                </div>
+                                <div class="layui-inline security_list_query_param_passType">
+                                    <input type="text" class="layui-input" data-name="passType" name="passTypeFirst" placeholder="密钥类型" />
+                                </div>
+                                <div class="layui-inline security_list_query_param_passExpiry">
+                                    <input type="text" data-name="passExpiry" name="passExpiryFirst" lay-verify="datetime"  placeholder="起始密钥有效期" autocomplete="off" class="magicalcoder-laydate layui-input"/>
+                                </div>
+                                <div class="layui-inline security_list_query_param_passExpiry">-</div>
+                                <div class="layui-inline security_list_query_param_passExpiry">
+                                    <input type="text" data-name="passExpiry"  name="passExpirySecond" lay-verify="datetime"  placeholder="终止密钥有效期" autocomplete="off" class="magicalcoder-laydate layui-input"/>
+                                </div>
+                                <div class="layui-inline security_list_query_param_passCreatetime">
+                                    <input type="text" data-name="passCreatetime" name="passCreatetimeFirst" lay-verify="datetime"  placeholder="起始密钥上传时间" autocomplete="off" class="magicalcoder-laydate layui-input"/>
+                                </div>
+                                <div class="layui-inline security_list_query_param_passCreatetime">-</div>
+                                <div class="layui-inline security_list_query_param_passCreatetime">
+                                    <input type="text" data-name="passCreatetime"  name="passCreatetimeSecond" lay-verify="datetime"  placeholder="终止密钥上传时间" autocomplete="off" class="magicalcoder-laydate layui-input"/>
+                                </div>
+                                <div class="layui-inline security_list_query_param_passUserid">
+                                    <input type="text" class="layui-input" data-name="passUserid" name="passUseridFirst" placeholder="密钥使用者" />
+                                </div>
+                                <div class="layui-inline security_list_query_operate_search">
+                                    <a class="layui-btn  layui-btn-radius layui-btn-sm search_btn" data-type="reload"><i class="layui-icon layui-icon-search"></i>搜索</a>
+                                    <button type="reset" class="layui-btn layui-btn-radius layui-btn-warm layui-btn-sm"><i class="layui-icon layui-icon-refresh"></i>重置</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header"  style="height: auto;">
+                        <div class="layui-inline security_list_query_operate_del_all">
+                            <a class="layui-btn layui-btn-danger layui-btn-sm delAll_btn"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
+                        </div>
+                        <div class="layui-inline security_list_export_excel_all">
+                            <a class="layui-btn layui-btn-sm exportExcelAll_btn" title="数据量很多时谨慎使用,出于安全考虑最大导出20000条" data-max-export-count="20000"><i class="layui-icon layui-icon-export"></i>导出EXCEL</a>
+                        </div>
+                    </div>
+                    <div class="layui-card-body">
+                        <form class="layui-form tableForm security_list_table_form">
+                            <table class="security_list_table" id="newsList" lay-filter="newsListFilter" data-primary-fields="passId"></table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--/magicaldrag-->
+        <script type="text/html" id="passExpiryTemplate">
+            <input type="text" id="_passExpiry_{{= d.passId }}" name="passExpiry"  data-identify="{{= d.passId }}"  autocomplete="off" class="magicalcoder-table-laydate layui-input security_list_table_form_passExpiry" value="{{= d.passExpiry}}" lay-verify="magicalCoderVerify" magicalcoder-verify="|minLength=0"  placeholder="密钥有效期"/>
+        </script>
+        <script type="text/html" id="passCreatetimeTemplate">
+            <input type="text" id="_passCreatetime_{{= d.passId }}" name="passCreatetime"  data-identify="{{= d.passId }}"  autocomplete="off" class="magicalcoder-table-laydate layui-input security_list_table_form_passCreatetime" value="{{= d.passCreatetime}}" lay-verify="magicalCoderVerify" magicalcoder-verify="|minLength=0" disabled="true" placeholder="密钥上传时间"/>
+        </script>
+    <!--操作-->
+    <script type="text/html" id="newsListOperateTemplate">
+        <a class="layui-btn layui-btn-normal layui-btn-xs security_list_table_operate_edit" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs security_list_table_operate_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    </script>
+    <div th:replace="magicalcoder/v103/include/main-js :: commonMain" />
+    <script type="text/javascript"  th:src="@{/assets/admin/p_pass_old/list.js}"></script>
+</body>
+</html>

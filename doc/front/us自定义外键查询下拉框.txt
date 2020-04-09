@@ -1,0 +1,92 @@
+us如何自定义下拉框查询
+1.列表显示外键名字
+//表格每一列配置
+    var COLS = [[
+        {type: "checkbox", /*fixed:"left",*/ width:50},//全选
+        {field: 'customerId', title: '老人', align:'center', minWidth:200, templet:function (d) {
+                var value = (!d.customerId || d.customerId==null) ? '' : d.customerId
+                return '<div class="magicalcoder-table-foreign-select2"  lay-ignore="true"  name="customerId" data-identify="'+d.customerId+'" data-value="'+value+'" data-url="admin/system_mbyl_customer_rest/search"  data-id="id" data-text-fields="name"  lay-verify="magicalCoderVerify" magicalcoder-verify=""  placeholder="老人" data-limit="20"></div>'
+            },sort:true
+        },
+        /*{field: 'familyId', title: '家属', minWidth:200, align:"center",sort:true},*/
+        {field: 'familyId', title: '家属', align:'center', minWidth:200, templet:function (d) {
+                var value = (!d.familyId || d.familyId==null) ? '' : d.familyId
+                return '<div class="magicalcoder-table-foreign-select2"  lay-ignore="true"  name="familyId" data-identify="'+d.familyId+'" data-value="'+value+'" data-url="admin/system_mbyl_family_rest/search"  data-id="MBYL_FAMILY_ID" data-text-fields="MBYL_USER_NICK_NAME"  lay-verify="magicalCoderVerify" magicalcoder-verify=""  placeholder="家属" data-limit="20"></div>'
+            },sort:true
+        },
+        {field: 'relation', title: '关系', minWidth:200, align:"center",sort:true},
+        {title: '操作', minWidth:250, templet:'#newsListOperateTemplate',/*fixed:"right",*/align:"center"}//操作 到list.html页面查找模板对应的html
+    ]];
+这里的familyId是我们数据库中主表的字段，这里是映射了java实体类所以可以定义成驼峰，MBYL_FAMILY_ID是查询出来的需要存储在数据库中的字段，
+MBYL_USER_NICK_NAME是查询出来的需要在列表上显示的字段
+
+五个要点：1.data-url是我们需要查询外键的api
+		  2.data-id是外键表查询的主字段，可以把它看成是ID
+		  3.data-text-fields是外键表查询的副字段，可以把它看成是name
+		  4.name是主表的某个需要关联外键的字段
+		  5.data-identify是主表的某个需要关联外键的字段
+在列表中的外键显示是根据data-url中指定的方法去数据库中搜索根据data-id的值查找data-text-fields的值并返回，
+在查找的过程中uniqueField就是我们配置的data-id，uniqueValue就是我们配置的data-text-fields
+我们再列表中功能是把familyId赋给MBYL_FAMILY_ID，再根据MBYL_FAMILY_ID去外键表中查询MBYL_USER_NICK_NAME和MBYL_FAMILY_ID，并把MBYL_USER_NICK_NAME的值显示在familyId的位置上
+
+
+2.下拉框显示外键字段
+<div class="layui-inline security_list_query_param_familyId">
+	<select  data-name="familyId" class="magicalcoder-foreign-select2 layui-input" lay-ignore="true" name="familyIdFirst" 
+	style="height:30px;width: 100px" data-url="admin/system_mbyl_family_rest/search" data-id="MBYL_FAMILY_ID" data-text-fields="MBYL_USER_NICK_NAME" 
+	placeholder="家属" data-limit="20"><option value=""></option></select>
+</div>
+这里和上面描述的基本一致，但是有个地方不一样，下拉框在模糊查询的时候用的是keyword，keyword的值就是我们再搜索框中输入的值
+
+
+综合一下上面的说法，结合我们的实例代码，简明地说说流程：
+	<!--xml配置-->
+	<!-- 根据姓名查询家属 -->
+    <select id="getFamilyByQuery" parameterType="hashmap" resultType="java.util.HashMap">
+        select <include refid="findFieldSql"/> from user_family_view WHERE 1=1 <include refid="whereSql"></include>
+    </select>
+
+    <!--需要查询的字段-->
+    <sql id="findFieldSql">
+        MBYL_FAMILY_ID,
+        MBYL_USER_NICK_NAME
+    </sql>
+
+    <!--查询的条件-->
+    <sql id="whereSql">
+        <!--构造表格时的外键查询条件，根据id精确查询-->
+        <if test="null!=MBYL_FAMILY_ID">
+            AND MBYL_FAMILY_ID=#{MBYL_FAMILY_ID}
+        </if>
+        <!--构造下拉框的查询条件，根据名称模糊查询-->
+        <if test="null!=MBYL_USER_NICK_NAME">
+            AND MBYL_USER_NICK_NAME LIKE '%'||#{MBYL_USER_NICK_NAME}||'%'
+        </if>
+    </sql>
+
+	<!--API中定义的方法-->
+	@RequestMapping(value = "search")
+    public ResponseMsg search(
+        @RequestParam(required = false) String uniqueField,
+        @RequestParam(required = false) String uniqueValue,
+        @RequestParam(required = false,defaultValue = "20") Integer limit,
+        @RequestParam(required = false) String keyword
+    ){
+        limit = Math.min(PageConstant.MAX_LIMIT,limit);
+        List<Map<String,Object>> familyList = null;
+        Map<String,Object> query = new HashMap();
+        query.put("limit",limit);
+        if(uniqueValue!=null){//说明是来初始化的
+            query.put(uniqueField,uniqueValue);
+            familyList = systemMbylFamilyService.getFamilyByQuery(query);
+        }else {//正常搜索
+            if(ListUtil.isBlank(familyList)){
+                query.put("MBYL_USER_NICK_NAME",keyword);
+                familyList = systemMbylFamilyService.getFamilyByQuery(query);
+                query.remove("MBYL_USER_NICK_NAME");
+            }
+        }
+        return new ResponseMsg(familyList);
+    }
+下拉搜索框查询的时候是根据MBYL_USER_NICK_NAME模糊查询的（这个时候对应的search方法中的参数是keyword）
+表格列表中查询的时候是根据MBYL_FAMILY_ID精确查询的（这个时候对应的search方法中的参数是uniqueField和uniqueValue，比如'1'和'蔬菜'）

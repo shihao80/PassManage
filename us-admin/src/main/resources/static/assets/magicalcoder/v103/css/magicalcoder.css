@@ -1,0 +1,100 @@
+/*微调样式*/
+/*表格太窄*/
+.layui-table-cell{
+    height : 38px;
+}
+/*select2 样式保持跟layui一致 太窄 太靠上*/
+.select2-container .select2-selection--single {
+    height: 36px !important;
+    margin-top: 1px !important;;
+    border-radius:0px !important;;
+    border-color : #e6e6e6 !important;;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+    padding-top: 3px !important;;
+}
+.form-danger{
+    border-color:#FF5722!important
+}
+/*仅仅在权限控制模块使用 其他清空请不要使用此样式*/
+.security-hide{display:none!important}
+/*控制子表弹窗样式*/
+.childrenIframe{position:absolute;height:100%;width:98%;border:none;}
+
+
+/** admin风格的弹窗 start*/
+.layui-layer.magicalcoder-layer-admin {
+    box-shadow: 1px 1px 50px rgba(0, 0, 0, .3) !important;
+    border: none !important;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-title {
+    background-color: #24262F;
+    color: #ffffff;
+    height: 50px;
+    line-height: 50px;
+    border: 0;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin {
+    top: 17px;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin a {
+    font-family: layui-icon !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #ffffff;
+}
+
+/* 关闭按钮 */
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-close1 {
+    background: none;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-close1:before {
+    content: "\1006";
+}
+
+/* 最小化按钮 */
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-min cite {
+    background-color: #dddddd;
+}
+
+/* 最大化按钮 */
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-max {
+    background: none;
+    font-size: 14px;
+    padding-top: 1px;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-max:before {
+    content: "\e622";
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-setwin .layui-layer-maxmin:before {
+    content: "\e758";
+}
+
+/** 弹窗按钮 */
+.layui-layer.magicalcoder-layer-admin .layui-layer-btn .layui-layer-btn0 {
+    border-color: #009688;
+    background-color: #009688;
+}
+
+.layui-layer.magicalcoder-layer-admin .layui-layer-btn a {
+    height: 34px;
+    line-height: 34px;
+}
+
+.magicalcoder-layer-admin {
+    max-width: 100%;
+}
+
+.layui-layer-iframe .layui-layer-content {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+/** admin风格的弹窗-end */

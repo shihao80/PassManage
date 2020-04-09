@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="commonHead(title)">
+	<meta charset="utf-8"/>
+	<title th:text="${title}"/>
+    <!--兼容ie9之前写法  需要以http之类的开头-->
+	<base th:href="${#httpServletRequest.getScheme()+'://'+#httpServletRequest.getServerName()+':'+#httpServletRequest.getServerPort()+#httpServletRequest.getContextPath()+'/'}"/>
+	<meta name="renderer" content="webkit"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta http-equiv="Access-Control-Allow-Origin" content="*"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<meta name="format-detection" content="telephone=no"/>
+	<link rel="icon" href="favicon.ico"/>
+
+	<link rel="stylesheet" th:href="@{/assets/magicalcoder/v103/layui/css/layui.css}" media="all" />
+<!--非发布环境 采用分离的css-->
+    <link th:if="${!publish}" rel="stylesheet" th:href="@{/assets/magicalcoder/v103/css/public.css}" media="all" />
+    <link th:if="${!publish}" rel="stylesheet" th:href="@{/assets/magicalcoder/v103/css/select2.min.css}" media="all" />
+    <link th:if="${!publish}" rel="stylesheet" th:href="@{/assets/magicalcoder/v103/css/magicalcoder.css}" media="all" />
+<!--发布环境采用合并的css-->
+    <link th:if="${publish}" rel="stylesheet" th:href="@{/assets/magicalcoder/v103/css/youya-boot-all.min.css}" media="all" />
+</head>
+</html>

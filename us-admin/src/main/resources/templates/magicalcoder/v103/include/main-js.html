@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="commonMain" >
+
+	<script type="text/javascript" th:src="@{/assets/magicalcoder/v103/layui/layui.all.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        /*存储一些全局变量 可以后后端传过来的 在AdminRmpController.java*/
+        var _CTX = /*[[@{/}]]*/ ;
+        var fileExtraAddPrefix = /*[[${fileExtraAddPrefix}]]*/ ;
+        var requestPrefix = /*[[${requestPrefix}]]*/ ;
+        var jQuery = layui.jquery;
+        _GLOBAL = {"ctx":_CTX,file:{fileExtraAddPrefix:fileExtraAddPrefix,requestPrefix:requestPrefix}}
+        youyaboot_all = {}
+    </script>
+    <!--这个文件不用合并 本身就是压缩过的-->
+    <script type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/lib/select2.js}"></script>
+
+    <!--如果是开发方式 加载各种-->
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/lib/authtree.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/core/mc-constant.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/core/mc-util.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/core/mc-verify.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/component/mc-select2.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/component/mc-rmp.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/component/mc-layui-component.js}"></script>
+    <script th:if="${!publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/component/mc-children.js}"></script>
+
+    <!--如果线上环境 就加载1个单一的js 性能高 线上js 请使用打包工具自动运行即可 制作方法参考YouyabootAllJsCompressTest-->
+    <script th:if="${publish}" type="text/javascript" th:src="@{/assets/magicalcoder/v103/crud/youya-boot-all.min.js}"></script>
+</div>
+</html>
