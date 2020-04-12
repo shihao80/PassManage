@@ -1,0 +1,1 @@
+                        <textarea name="${node.dbField.javaField}" placeholder="$node.formItem.placeholder" class="layui-textarea" lay-verify="magicalCoderVerify#parse("vms/$version/jsp/include/formvalidate/lay-verify.vm")" #if($node.formItem.disabled)disabled="true"#end>$!node.formItem.defaultValue</textarea>

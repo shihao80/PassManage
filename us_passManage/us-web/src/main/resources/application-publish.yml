@@ -1,0 +1,48 @@
+##笔记本的环境设置
+server:
+    #tomcat端口  比如http://{ip}:{port}{/context-path}中的{port} 纯数字
+    port: 18088
+common:
+    datasource:
+        #mysql url连接信息
+        url: jdbc:mysql://localhost:3306/us?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&userSSL=true&serverTimezone=Hongkong&zeroDateTimeBehavior=CONVERT_TO_NULL
+        #数据库用户名
+        username: root
+        #数据库密码
+        password: root123
+        #mysql8新驱动名称
+        driverClassName: com.mysql.cj.jdbc.Driver
+
+spring:
+    thymeleaf:
+        cache: false
+    redis:
+        #所有的redis 缓存都会加入下面的前缀 方便管理
+        keyPrefix: us-admin.
+        # redis地址 单机模式 参见RedisConfig
+        host: localhost
+        #redis端口 单机模式
+        port: 6379
+        #不允许redis密码为空字符串 可以不设置 您也可以使用"1234"
+        password:
+            #集群模式 默认不开启 因为集群模式redis配置复杂，演示版只有一个redis
+            #        cluster:
+            #redis支持集群模式(需要参考文档自行打开) 也支持单机(配置一个即可) 配置规则：节点的ip:port,ip:port 逗号分隔多个
+            #            nodes: localhost:6379
+        #最大连接时间 具体参考JedisCluster官方文档
+    #            connectionTimeout: 5000
+    #            soTimeout: 5000
+    #            maxAttempts: 3
+
+    #druid管理后台 http://localhost:18088/us-web/druid/ 可以查看数据源的状态 账号/密码：web/123456
+    monitor:
+        druid:
+            userName: web
+            password: 123456
+            allowIps: 127.0.0.1
+            denyIps: 10.1.1.1
+            filters: stat,log4j
+    devtools:
+        restart:
+            #是否开启热部署 另外需要配置ide的配置一同生效
+            enabled: false

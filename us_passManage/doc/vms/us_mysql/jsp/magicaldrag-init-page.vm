@@ -1,0 +1,14 @@
+#parse("vms/$version/common/variable/head.vm")
+#parse("vms/$version/common/comment/html-desc.vm")
+##此文件是生成器创建新文件时，默认初始化此内容 此模板位置 配置在applicaton.properties中
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head  th:include="magicalcoder/${jshtmlVersion}/include/head :: commonHead('${tableComment}')"/>
+<body class="childrenBody">
+<!--请不要删除magicaldrag注释标签，可以配合布局器进行联动布局-->
+<!--magicaldrag-->
+
+<!--/magicaldrag-->
+    <div th:replace="magicalcoder/${jshtmlVersion}/include/main-js :: commonMain" />
+</body>
+</html>

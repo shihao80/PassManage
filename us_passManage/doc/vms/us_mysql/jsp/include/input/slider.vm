@@ -1,0 +1,2 @@
+                        <input type="text" class="layui-input" name="${node.dbField.javaField}" placeholder="$node.formItem.placeholder" lay-verify="magicalCoderVerify#parse("vms/$version/jsp/include/formvalidate/lay-verify.vm")" value="$!node.formItem.defaultValue" #if($node.formItem.disabled)disabled="true"#end/>
+                        <div class="magicalcoder-slider" name="${node.dbField.javaField}Slider" $TableFieldUtil.layuiOptionsToHtmlAttrs($node.formItem.selectValue)></div>

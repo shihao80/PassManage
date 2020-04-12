@@ -1,0 +1,104 @@
+##本地环境设置 配置注意事项 : 后面紧跟一个空格 然后再配置您的实际值
+server:
+    #tomcat端口  比如http://{ip}:{port}{/context-path}中的{port} 纯数字
+    port: 18080
+Spring:
+    datasource:
+        #mysql url连接信息
+        url: jdbc:mysql://localhost:3307/us?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&userSSL=true&serverTimezone=Hongkong&zeroDateTimeBehavior=CONVERT_TO_NULL
+        #数据库用户名
+        username: root
+        #数据库密码
+        password: root
+        #mysql8新驱动名称
+        driverClassName: com.mysql.cj.jdbc.Driver
+
+spring:
+    thymeleaf:
+        cache: false
+    redis:
+        #所有的redis 缓存都会加入下面的前缀 方便管理
+        keyPrefix: us-admin.
+        # redis地址 单机模式 参见RedisConfig
+        host: localhost
+        #redis端口 单机模式
+        port: 6379
+        #不允许redis密码为空字符串 可以不设置 您也可以使用"1234"
+        password:
+        #集群模式 默认不开启 因为集群模式redis配置复杂，演示版只有一个redis
+        #        cluster:
+        #redis支持集群模式(需要参考文档自行打开) 也支持单机(配置一个即可) 配置规则：节点的ip:port,ip:port 逗号分隔多个
+#        nodes: localhost:6379
+#            最大连接时间 具体参考JedisCluster官方文档
+#            connectionTimeout: 5000
+#            soTimeout: 5000
+#            maxAttempts: 3
+
+    #druid管理后台 http://localhost:18080/us-admin/druid/ 可以查看数据源的状态 账号/密码：admin/123456
+    monitor:
+        druid:
+            userName: admin
+            password: 123456
+            allowIps: 127.0.0.1
+            denyIps: 10.1.1.1
+            filters: stat,log4j
+    devtools:
+        restart:
+            #是否开启热部署 另外需要配置ide的配置一同生效 参考这篇文章 https://blog.csdn.net/boywcx/article/details/81164411
+            enabled: false
+    servlet:
+        multipart:
+            #单个文件大小 1G
+            max-file-size: 1024000000
+            #总上传的数据大小 1G
+            max-request-size: 1024000000
+            #是否开启
+            enabled: true
+
+magicalcoder:
+    file:
+        #文件上传配置：useDisk useAliyunOss  如果open都为true 则都使用      returnUrl 默认优先级 useAliyunOss useDisk
+        upload:
+            #上传至本地硬盘
+            useDisk:
+                #是否开启
+                open: true
+                #控制是否采用此模式返回给前端的图片地址
+                returnUrl: true
+                #由于spring boot是jar方式执行，无法自动映射上传文件访问地址，采取单独映射方法
+                mapping:
+                    #文件要上传到的硬盘路径 例如 windows: /E:/tmp/test/  linux: /home/web/file/upload/ 如果不设置 则会自动查找classpath路径下的upload
+                    uploadDiskFolder:
+                    #虚拟访问映射地址 请尽量不要改动 AdminCommonFileRestController里面有根据这个返回给前端  你可以设置images/magic 前后不要有/ 不能为空
+                    requestPrefix: upload
+                    #实际额外在前面添加其他内容 主要用于跟你自己的项目路径映射 会在实际路径中加入此前缀 不要以http开头 /upload/
+                    fileExtraAddPrefix: upload/
+            #使用阿里云oss 开通方式参考 doc\upload\阿里云oss文件上传.docx 本配置请改成您自己的阿里云实际参数 因为存储桶要钱购买 所以这里不可能免费使用
+            useAliyunOss:
+                #是否开启
+                open: false
+                #控制是否采用此模式返回给前端的图片地址
+                returnUrl: true
+                #Region请按实际情况填写
+                endpoint: http://oss-cn-beijing.aliyuncs.com
+                #oos存储账号
+                accessKeyId: LTAIGeWoz1iMmX2X
+                #oos存储密码
+                accessKeySecret: OywMJpmN5cSqreqgLNYZVrBqtxmE8H
+                #oos存储桶名称
+                bucketName: us
+                #桶的地址前缀 你如果不明白怎么配置 去阿里云oss后台 找个地址看一下 组合是 urlPrefix+上传时候的文件名称
+                aliyunImgDomain: https://us.oss-cn-beijing.aliyuncs.com/
+
+    #超级管理员账号名称 密码默认：magicalcoder
+    superUserName: magicalcoder
+    cors:
+        #      跨域 支持哪些同源域名 逗号分隔多个 你可以配置 http://localhost:18088,http://www.magicalcoder.com 跨域demo参考README.md
+        allowOrigin:
+    #是否是发布模式 true则加载精简的us-all.min.js us-all.min.css，如果您更改了系统js css 注意自行合并 参考YouyabootAllJsCompressTest YouyabootAllCssCompressTest 这样页面加载速度会更快 否则加载其他的crud下面的js 和各个 css
+    publish: false
+    settings:
+        #当启动成功 自动帮助启动浏览器  linux服务端部署方式启动 请设置false
+        autoStartExplorer: true
+        #设置默认浏览器的浏览器路径 此处设置chrome为例 您如果未安装chrome 或者不设置此处 则使用默认浏览器
+        explorerPath: C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe

@@ -1,0 +1,114 @@
+##定义了非常多的快捷变量供使用 模板编辑时使用 $head.即可调出所有变量
+##项目相关名
+#set($commonUtilName = ${dbProject.commonUtilName})
+#set($companyName = ${dbProject.companyName})
+#set($projectName = ${dbProject.projectName})
+#set($include = 'include')
+##每次升级 有可能改变通用 js html 所以用版本号来兼容
+#set($jshtmlVersion = 'v103')
+##数据库实际名字
+#set($databaseRealName = ${dbProject.databaseRealName})
+##表名称
+#set($tableName = ${dbTable.tableName})
+##表实际名称
+#set($tableRealName = ${dbTable.tableRealName})
+##表实际名称小写
+#set($tableRealNameLowerCase = $TableFieldUtil.toLowerCase(${dbTable.tableRealName}))
+##表注释
+#set($tableComment=${dbTable.tableComment})
+##表名转化后的java类名
+#set($Entity=$TableFieldUtil.sqlTableToJavaClassName($tableName))
+##java类名首字母小写
+#set($entity=$TableFieldUtil.firstCharToLower($Entity))
+##java类名字母全小写
+#set($lowerEntity=$TableFieldUtil.toLowerCase($Entity))
+##返回getGoodsList之类的字符串
+#set($getEntityList = "get${Entity}List")
+##velocity的#是特殊符号 这里转义一下
+#set($jing = '#')
+##如果您觉得生成的代码很难控制空格 不妨试试下面的变量
+#set($tab1 = '    ')
+#set($tab2 = '        ')
+#set($tab3 = '            ')
+#set($tab4 = '                ')
+#set($tab5 = '                    ')
+#set($tab6 = '                        ')
+#set($tab7 = '                            ')
+#set($tab8 = '                                ')
+#set($tab9 = '                                    ')
+#set($tab10 = '                                        ')
+#set($tab11 = '                                             ')
+#set($tab12 = '                                                 ')
+#set($tab13 = '                                                     ')
+#set($tab14 = '                                                         ')
+#set($tab15 = '                                                             ')
+#set($tab16 = '                                                                 ')
+#set($tab17 = '                                                                     ')
+#set($tab18 = '                                                                         ')
+#set($tab19 = '                                                                             ')
+#set($tab20 = '                                                                                 ')
+##无自增的nodelist
+#set($noAutoIncreseNodeList = $CreateVmUtil.noAutoIncreseNodeList($nodeList))
+##字段中是否存在Bigdecimal类型
+#set($hasBigDecimal=false)
+#foreach($node in $nodeList)
+    #if($node.dbField.javaType == "BigDecimal")
+        #set($hasBigDecimal=true)
+    #end
+#end
+##是否存在日期类型查询
+#set($hasDateQuery=false)
+#foreach($node in $nodeList)
+    #if($node.dbField.javaType == 'Date' || $node.dbField.javaType == 'Time' || $node.dbField.javaType == 'Timestamp')
+        #set($hasDateQuery=true)
+    #end
+#end
+##是否存在file inpytType
+#set($hasFile=false)
+#foreach($node in $nodeList)
+    #if($node.formItem.inputType == $MagicConstant.INPYT_TYPE_IMG_FILE())
+        #set($hasFile=true)
+    #end
+#end
+##是否存在ckeditor inpytType
+#set($hasKindEditor=false)
+#foreach($node in $nodeList)
+    #if($node.formItem.inputType == $MagicConstant.INPYT_TYPE_KINDEDITOR())
+        #set($hasKindEditor=true)
+    #end
+#end
+##是否有主键
+#set($hasDbPriorityKey = false)
+##是否有自增
+#set($hasAutoIncrease = false)
+##主键数据库字段名
+#set($dbPriorityKeySqlField = '')
+##主键字段java变量名
+#set($dbPriorityKeyJavaField = '')
+##主键java类型
+#set($dbPriorityKeyJavaType = '')
+##主键java get名称
+#set($dbPriorityKeyJavaGetName = '')
+##主键java set名称
+#set($dbPriorityKeyJavaSetName = '')
+##主键数据库java set名称
+#set($dbPriorityKeyDbType = '')
+##主键字段
+#set($dbPriorityNode = {})
+##查找字段中是主键的设置到全局变量
+#foreach( $node in $nodeList)
+    #if($node.dbField.dbPriorityKey)
+        #set($dbPriorityNode = $node)
+        #set($dbPriorityKeySqlField = $node.dbField.dbRealName)
+        #set($dbPriorityKeyJavaField = $node.dbField.javaField)
+        #set($dbPriorityKeyJavaType = $node.dbField.javaType)
+        #set($dbPriorityKeyJavaGetName = $node.dbField.javaGetName)
+        #set($dbPriorityKeyJavaSetName = $node.dbField.javaSetName)
+        #set($dbPriorityKeyDbType = $node.dbField.dbType)
+        #set($hasDbPriorityKey = true)
+        #set($hasAutoIncrease = true)
+    #end
+#end
+##唯一键
+#set($dbUniqueNodes = $TableFieldUtil.uniqueNodes($nodeList))
+#set($hasDbUniqueNodes = ($dbUniqueNodes && $dbUniqueNodes.size()>0))
