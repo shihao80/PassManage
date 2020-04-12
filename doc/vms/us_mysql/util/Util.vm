@@ -1,7 +1,0 @@
-#parse("vms/$version/common/variable/head.vm")
-package ${companyName}.${projectName}.service.${lowerEntity}.util;
-#parse("vms/$version/common/comment/ClassDesc.vm")
-
-public class ${Entity}Util {
-
-}
