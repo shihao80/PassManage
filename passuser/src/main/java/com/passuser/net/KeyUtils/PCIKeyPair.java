@@ -1,4 +1,4 @@
-package com.passuser.net.utils;
+package com.passuser.net.KeyUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

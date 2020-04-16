@@ -18,7 +18,7 @@ public class KeyPairServiceImpl implements KeyPairService {
     public Integer insertKeyPairByUsername(String username, String priKey) {
         KeyPairPO keyPairPO = new KeyPairPO();
         keyPairPO.setUserName(username);
-        keyPairPO.setUserPriKey(priKey);
+        keyPairPO.setPubKey(priKey);
         int count = keyPairMapper.insert(keyPairPO);
         return count;
     }
