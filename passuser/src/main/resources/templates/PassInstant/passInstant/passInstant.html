@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <title>秘钥管理系统 - 主页</title>
+    <link rel="shortcut icon" href="/static/favicon.ico">
+    <link href="/static/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+<div id="wrapper">
+<div class="row">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>密钥管理管理</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-lg">
+                    <div class="col-sm-12">
+
+                        <div class="hidden-xs" id="PassInstantTableToolbar" role="group">
+                                <input type="button" name="添加" icon="fa-plus" onclick="PassInstant.openAddPassInstant()"/>
+                                <input type="button"  name="修改" icon="fa-edit" onclick="PassInstant.openPassInstantDetail()"/>
+                                <input type="button"  name="删除" icon="fa-remove" onclick="PassInstant.delete()"/>
+                        </div>
+                        <table id="PassInstantTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/modular/PassInstant/passInstant/passInstant.js"></script>
+</div>
+
+<!-- 全局js -->
+<script src="/static/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="/static/js/plugins/layer/layer.js"></script>
+
+<!-- 自定义js -->
+<script src="/static/js/hplus.js?v=4.1.0"></script>
+<script type="text/javascript" src="/static/js/contabs.js"></script>
+
+<!-- 第三方插件 -->
+<script src="/static/js/plugins/pace/pace.min.js"></script>
+
+</body>
+
+</html>

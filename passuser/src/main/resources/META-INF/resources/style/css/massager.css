@@ -1,0 +1,30 @@
+@CHARSET "UTF-8";
+.clear{
+	margin:0 auto;/*div左右居中*/
+	width:600px;
+}
+.middle{
+    font-size:18px;
+	word-spacing:50px;
+	height:40px;
+	width:100%;
+	background-color:rgba(0,139,139,0.8);
+}
+.middle .a{
+	margin-left:350px;
+	margin-top:10px;
+}
+.middle a{
+	color:white;
+	text-decoration:none;
+	font-family:隶书;
+}
+.center{
+	float:left;
+	width:1000px;
+	margin-left:100px;
+}
+.center td{
+	height:100px;
+	width:120px;
+}

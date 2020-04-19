@@ -1,0 +1,35 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="passId" name="密钥UUID" value="${item.passId}" underline="true"/>
+                            <#input id="passName" name="密钥名称" value="${item.passName}" underline="true"/>
+                            <#input id="passLength" name="密钥长度" value="${item.passLength}" underline="true"/>
+                            <#input id="passType" name="密钥类型" value="${item.passType}" underline="true"/>
+                            <#input id="passChildfir" name="第一子密钥" value="${item.passChildfir}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="passChildsec" name="第二子密钥" value="${item.passChildsec}" underline="true"/>
+                            <#input id="passChildthi" name="第三子密钥" value="${item.passChildthi}" underline="true"/>
+                            <#input id="passExpiry" name="密钥有效期" value="${item.passExpiry}" underline="true"/>
+                            <#input id="passCreatetime" name="密钥上传时间" value="${item.passCreatetime}" underline="true"/>
+                            <#input id="passUserid" name="密钥用户" value="${item.passUserid}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="PassInstantInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="PassInstantInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/PassInstant/passInstant/passInstant_info.js"></script>
+@}

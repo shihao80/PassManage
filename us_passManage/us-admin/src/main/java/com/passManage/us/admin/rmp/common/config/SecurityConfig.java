@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers(PermissionConstant.STATIC_PREFIX+"**");//忽略静态资源
+        web.ignoring().antMatchers(PermissionConstant.REMOTE_PREFIX+"**");//忽略远程访问接口
     }
 
     @Override

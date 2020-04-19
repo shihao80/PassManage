@@ -2,19 +2,23 @@ package com.passuser.net.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.passuser.net.annotation.AuthToken;
-import com.scorpios.tokenauthentication.utils.ConstantKit;
+
+import com.passuser.net.utils.ConstantKit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-import redis.clients.jedis.Jedis;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Think
@@ -25,6 +29,9 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class AuthorizationInterceptor implements HandlerInterceptor {
+
+    @Autowired
+    private RedisTemplate<String ,String> redisUtil;
 
     //存放鉴权信息的Header名称，默认是Authorization
     private String httpHeaderName = "Authorization";
@@ -51,28 +58,27 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         // 如果打上了AuthToken注解则需要验证token
         if (method.getAnnotation(AuthToken.class) != null || handlerMethod.getBeanType().getAnnotation(AuthToken.class) != null) {
 
-//            String token = request.getHeader(httpHeaderName);
-            String token = request.getParameter(httpHeaderName);
+            String token = request.getHeader(httpHeaderName);
+ //           String token = request.getParameter(httpHeaderName);
             log.info("Get token from request is {} ", token);
             String username = "";
-            Jedis jedis = new Jedis("127.0.0.1", 6379);
             if (token != null && token.length() != 0) {
-                username = jedis.get(token);
+                username = redisUtil.opsForValue().get(token);
                 log.info("Get username from Redis is {}", username);
             }
             if (username != null && !username.trim().equals("")) {
                 //log.info("token birth time is: {}",jedis.get(username+token));
-                Long tokeBirthTime = Long.valueOf(jedis.get(token + username));
+                Long tokeBirthTime = Long.valueOf(redisUtil.opsForValue().get(token + username));
                 log.info("token Birth time is: {}", tokeBirthTime);
                 Long diff = System.currentTimeMillis() - tokeBirthTime;
                 log.info("token is exist : {} ms", diff);
                 //重新设置Redis中的token过期时间
                 if (diff > ConstantKit.TOKEN_RESET_TIME) {
-                    jedis.expire(username, ConstantKit.TOKEN_EXPIRE_TIME);
-                    jedis.expire(token, ConstantKit.TOKEN_EXPIRE_TIME);
+                    redisUtil.expire(username, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
+                    redisUtil.expire(token, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
                     log.info("Reset expire time success!");
                     Long newBirthTime = System.currentTimeMillis();
-                    jedis.set(token + username, newBirthTime.toString());
+                    redisUtil.opsForValue().set(token + username, newBirthTime.toString());
                 }
 
                 //用完关闭

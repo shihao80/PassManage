@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class RandomStringController {
@@ -15,7 +16,8 @@ public class RandomStringController {
     @Autowired
     private RandomService randomService;
 
-    @RequestMapping(value = "ranstr/{length}/{userName}",method = RequestMethod.GET)
+    @RequestMapping(value = "/remote/ranstr/{length}/{userName}",method = RequestMethod.GET)
+    @ResponseBody
     public R getRandomString(@PathVariable("length")String length, @PathVariable("userName") String userName){
         String random = RandomStringUtils.random(Integer.parseInt(length), false, true);
         R r = new R();
@@ -25,6 +27,7 @@ public class RandomStringController {
     }
 
     @RequestMapping(value = "updateran/{userName}/{keyId}",method = RequestMethod.GET)
+    @ResponseBody
     public R updateRandomKeyId(@PathVariable("userName")String userName, @PathVariable("keyId") String keyId){
         Boolean flag = randomService.updateRandomStringByUserNameAndKey(userName, Integer.parseInt(keyId));
         return flag ? R.ok():R.error();

@@ -1,0 +1,56 @@
+@CHARSET "UTF-8";
+body{
+	background: url("../image/02.jpg") no-repeat;
+	height: 100%;
+	width: 100%;
+}
+.d1{
+	margin-left: 600px;
+	margin-top: 20px;
+	color: #000040;
+}
+.h{
+	margin-left: 700px;
+}
+.i1{
+	width: 300px;
+	margin-left: 30px;
+}
+.i2{
+	width: 300px;
+	margin-left: 15px;
+}
+.i3{
+	width: 300px;
+	margin-left: 30px;
+}
+.i4{
+	width: 300px;
+	
+}
+.i5{
+	width: 300px;
+	margin-left: 30px;
+}
+.i6{
+	width: 300px;
+	margin-left: 30px;
+}
+.i7{
+	margin-left: 700px;
+	margin-top: 50px;
+	border: none;
+	width: 50px;
+	height: 20px;
+	background: #87CEEB;
+	color: #fff;
+}
+.i8{
+	margin-left: 200px;
+	margin-top: 50px;
+	border: none;
+	width: 50px;
+	height: 20px;
+	background: #87CEEB;
+	color: #fff;
+}

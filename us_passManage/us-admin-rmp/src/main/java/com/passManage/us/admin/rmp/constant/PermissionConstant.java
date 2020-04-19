@@ -7,6 +7,7 @@ public interface PermissionConstant {
     String ADMIN_PREFIX = "/admin/";//将要被权限系统拦截的前缀
     String STATIC_PREFIX = "/assets/";//将要被权限系统拦截的前缀
     String LOGIN_FORM_URL = "/login";//登陆地址
+    String REMOTE_PREFIX = "/remote";//远程登陆接口
 
 
     enum Platform implements PermissionConstant{

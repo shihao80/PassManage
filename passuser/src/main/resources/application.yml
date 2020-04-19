@@ -4,7 +4,7 @@ server:
   #当前环境上下文 比如http://{ip}:{port}{/context-path}中的{/context-path} 以/开头配置
   #    context-path: /us-admin
   servlet:
-    context-path: /passuser
+    context-path: /
 #log
 logging:
   config:

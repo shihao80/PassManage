@@ -1,0 +1,9 @@
+@CHARSET "UTF-8";
+body{
+	background: url("../image/02.jpg") no-repeat;
+	height: 100%;
+	width: 100%;
+}
+.h{
+	margin-left: 700px;
+}

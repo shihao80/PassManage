@@ -2,7 +2,6 @@ package com.passuser.net.utils;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
-import com.scorpios.tokenauthentication.utils.TokenGenerator;
 
 
 @Component

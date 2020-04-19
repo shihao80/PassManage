@@ -2,26 +2,32 @@ package com.passuser.net.utils;
 
 import com.google.gson.Gson;
 import com.passuser.net.KeyUtils.Sm4Util;
-import redis.clients.jedis.Jedis;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ResolveResponUtils {
 
-    public static R resolveGetRespons(String url, Map<String, String> paramsMap){
+    @Autowired
+    private static RedisTemplate<String,String> redisUtil;
+
+    @Autowired
+    private static Map<String ,Object> map = new HashMap<>();
+
+    public static Map<String ,Object> resolveGetRespons(String url, Map<String, String> paramsMap){
         String getRanStr = HttpUtils.get(url, paramsMap);
         return getResponse(getRanStr);
     }
 
-    public static R resolvePostRespons(String url, Map<String, String> paramsMap){
+    public static Map<String ,Object> resolvePostRespons(String url, Map<String, String> paramsMap){
         String getRanStr = HttpUtils.post(url, paramsMap);
         return getResponse(getRanStr);
     }
 
-    public static R resolvePostJsonRespons(String url, String postJson){
+    public static Map<String ,Object> resolvePostJsonRespons(String url, String postJson){
         String getRanStr = HttpUtils.HttpPostWithJson(url, postJson);
         return getResponse(getRanStr);
     }
@@ -57,9 +63,8 @@ public class ResolveResponUtils {
     }
 
     private static Map<String ,String> dealResponseDecryptData(String getRanStr, List<String> dataKey) throws Exception {
-        Jedis jedis = JedisConnectionUtils.getJedis();
-        String sessionkey = jedis.get("sessionkey");
-        R response = getResponse(getRanStr);
+        String sessionkey = redisUtil.opsForValue().get("sessionkey");
+        Map<String ,Object> response = getResponse(getRanStr);
         Map<String ,String> perDatas = new HashMap<>();
         if(response!= null){
             for (String key : dataKey) {
@@ -72,9 +77,8 @@ public class ResolveResponUtils {
     }
 
     private static String dealResponseListDecryptData(String dataKey, String getRanStr) throws Exception {
-        Jedis jedis = JedisConnectionUtils.getJedis();
-        String sessionkey = jedis.get("sessionkey");
-        R response = getResponse(getRanStr);
+        String sessionkey = redisUtil.opsForValue().get("sessionkey");
+        Map<String ,Object> response = getResponse(getRanStr);
         String perData = "";
         if(response!= null){
             perData = Sm4Util.decryptEcb(sessionkey, response.get(dataKey).toString());
@@ -86,7 +90,7 @@ public class ResolveResponUtils {
 
 
     private static String dealGetResponseData(String dataKey, String getRanStr) throws Exception {
-        R response = getResponse(getRanStr);
+        Map<String ,Object> response = getResponse(getRanStr);
         String perData = "";
         if (response != null) {
             perData = response.get(dataKey).toString();
@@ -96,9 +100,9 @@ public class ResolveResponUtils {
         return perData;
     }
 
-    private static R getResponse(String getRanStr) {
+    private static Map<String ,Object> getResponse(String getRanStr) {
         Gson gson = new Gson();
-        return gson.fromJson(getRanStr, R.class);
+        return gson.fromJson(getRanStr, map.getClass());
     }
 
 }

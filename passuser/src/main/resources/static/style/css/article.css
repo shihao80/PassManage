@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+body{
+	background-color:#FFFFF0;
+}
+
+.mid_bg{
+
+	margin-left: 180px;	
+	width:70%;
+	height:100%;
+}
+
+.head{
+	width:100%;
+	height:43px;
+	background-color:rgba(0,139,139,0.8);
+}
+
+.nav a{
+	text-decoration: none;
+	color:white;
+	margin-left:70px;
+	letter-spacing:10px;
+	cursor:hand;
+	float:left
+}
+
+.user{
+	color:white;
+	float:right;
+	letter-spacing:10px;
+	margin-right:100px;
+}
+
+p{
+	margin-left:20px;
+	line-height:50px;
+	font-size:17px;
+	
+}
+
+
+
+.last{
+    margin-left:200px;
+
+}
+
+.next{
+    margin-left:400px;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,100 @@
+@charset "UTF-8";
+
+body
+  { 
+    background-image:url('../image/sky.png');
+    background-repeat:no-repeat;
+    background-position:center;
+  }
+
+
+
+.head{
+	width:100%;
+	height:43px;
+	background-color:#00BFFF;
+
+}
+
+.login{
+	color:white;
+	float:right;
+	letter-spacing:10px;
+	margin-right:100px;
+}
+
+.nav a{
+	text-decoration: none;
+	color:white;
+	margin-left:70px;
+	letter-spacing:10px;
+	cursor:hand;
+	float:left
+}
+
+.login a{
+	text-decoration: none;
+	color:white;
+	letter-spacing:10px;
+	cursor:hand;
+}
+
+.reg{
+	margin-top: 80px;
+	margin-left:530px;
+	position: fixed;	
+	width:470px;
+	height:460px;
+	overflow: hidden;
+	background-color:rgba(255,255,255,0.4);
+	border-radius: 10px;
+}
+
+.reg input{
+	width: 360px;
+    height: 30px;
+    border: 1px solid #C0C0C0;
+    margin-left: 60px;
+    font-size: 16px;
+    margin-top: 5px;
+    outline: none;
+	border-radius: 10px;
+}
+
+.reg span{
+	margin-left:26px;
+	font-size:17px;
+}
+
+.round_icon{
+	width:90px;
+	height: 90px;
+	display: flex;
+	border-radius: 100%;  
+	border:3px solid #FFFFFF;
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+p{
+	font-size:40px;
+	text-align:center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

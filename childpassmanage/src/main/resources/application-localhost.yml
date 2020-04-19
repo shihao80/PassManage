@@ -1,7 +1,7 @@
 ##本地环境设置 配置注意事项 : 后面紧跟一个空格 然后再配置您的实际值
 server:
     #tomcat端口  比如http://{ip}:{port}{/context-path}中的{port} 纯数字
-    port: 18080
+    port: 18087
 Spring:
     datasource:
         #mysql url连接信息

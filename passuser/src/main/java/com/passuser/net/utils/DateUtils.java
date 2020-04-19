@@ -1,11 +1,6 @@
 package com.passuser.net.utils;
 
-
-
-
-
-
-import com.alibaba.dubbo.common.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -483,7 +478,7 @@ public class DateUtils {
      */
     public static long getTime(String format) {
         long t = 0;
-        if (StringUtils.isBlank(format)) {
+        if (StringUtils.isEmpty(format)) {
             return t;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
