@@ -23,12 +23,10 @@ public class PpassInstant implements Serializable{
     private String passChildfir;//第一子密钥
     private String passChildsec;//第二子密钥
     private String passChildthi;//第三子密钥
+    private String passExpiry;//密钥有效期
     @DateTimeFormat( pattern = "yyyy-MM-dd HH:mm:ss" )
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
-    private Date passExpiry;//密钥有效期
-    @DateTimeFormat( pattern = "yyyy-MM-dd HH:mm:ss" )
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
-    private Date passCreatetime;//密钥上传时间
+    private String passCreatetime;//密钥上传时间
     private Integer passUserid;//密钥使用者
 
     
@@ -81,17 +79,17 @@ public class PpassInstant implements Serializable{
         this.passChildthi = passChildthi;
     }
 
-    public Date getPassExpiry(){
+    public String getPassExpiry(){
         return passExpiry;
     }
-    public void setPassExpiry(Date passExpiry){
+    public void setPassExpiry(String passExpiry){
         this.passExpiry = passExpiry;
     }
 
-    public Date getPassCreatetime(){
+    public String getPassCreatetime(){
         return passCreatetime;
     }
-    public void setPassCreatetime(Date passCreatetime){
+    public void setPassCreatetime(String passCreatetime){
         this.passCreatetime = passCreatetime;
     }
 

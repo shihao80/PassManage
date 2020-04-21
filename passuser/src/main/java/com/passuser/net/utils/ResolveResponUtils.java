@@ -4,66 +4,68 @@ import com.google.gson.Gson;
 import com.passuser.net.KeyUtils.Sm4Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class ResolveResponUtils {
 
     @Autowired
-    private static RedisTemplate<String,String> redisUtil;
+    private  RedisTemplate<String,String> redisTemplate;
 
     @Autowired
-    private static Map<String ,Object> map = new HashMap<>();
+    private  Map<String ,Object> map = new HashMap<>();
 
-    public static Map<String ,Object> resolveGetRespons(String url, Map<String, String> paramsMap){
+    public  Map<String ,Object> resolveGetRespons(String url, Map<String, String> paramsMap){
         String getRanStr = HttpUtils.get(url, paramsMap);
         return getResponse(getRanStr);
     }
 
-    public static Map<String ,Object> resolvePostRespons(String url, Map<String, String> paramsMap){
+    public  Map<String ,Object> resolvePostRespons(String url, Map<String, String> paramsMap){
         String getRanStr = HttpUtils.post(url, paramsMap);
         return getResponse(getRanStr);
     }
 
-    public static Map<String ,Object> resolvePostJsonRespons(String url, String postJson){
+    public  Map<String ,Object> resolvePostJsonRespons(String url, String postJson){
         String getRanStr = HttpUtils.HttpPostWithJson(url, postJson);
         return getResponse(getRanStr);
     }
 
-    public static String getGetResponseData(String url,Map<String, String> paramsMap, String dataKey) throws Exception {
+    public  String getGetResponseData(String url,Map<String, String> paramsMap, String dataKey) throws Exception {
         String getRanStr = HttpUtils.get(url, paramsMap);
         return dealGetResponseData(dataKey, getRanStr);
     }
 
-    public static String getPostJsonResponseData(String url,String postJson, String dataKey) throws Exception {
+    public  String getPostJsonResponseData(String url,String postJson, String dataKey) throws Exception {
         String getRanStr = HttpUtils.HttpPostWithJson(url, postJson);
         return dealGetResponseData(dataKey, getRanStr);
     }
 
-    public static String getPostResponseData(String url,Map<String, String> paramsMap, String dataKey) throws Exception {
+    public  String getPostResponseData(String url,Map<String, String> paramsMap, String dataKey) throws Exception {
         String getRanStr = HttpUtils.post(url, paramsMap);
         return dealGetResponseData(dataKey, getRanStr);
     }
 
-    public static Map<String ,String> getGetResponseDecryptData(String url,Map<String, String> paramsMap, List<String> dataKey) throws Exception {
+    public  Map<String ,String> getGetResponseDecryptData(String url,Map<String, String> paramsMap, List<String> dataKey) throws Exception {
         String getRanStr = HttpUtils.get(url, paramsMap);
         return dealResponseDecryptData(getRanStr,dataKey);
     }
 
-    public static Map<String ,String> getPostResponseDecryptData(String url,Map<String, String> paramsMap, List<String> dataKey) throws Exception {
+    public  Map<String ,String> getPostResponseDecryptData(String url,Map<String, String> paramsMap, List<String> dataKey) throws Exception {
         String getRanStr = HttpUtils.post(url, paramsMap);
         return dealResponseDecryptData( getRanStr,dataKey);
     }
 
-    public static Map<String ,String> getPostJsonResponseDecryptData(String url, String postjson, List<String> dataKey) throws Exception {
+    public  Map<String ,String> getPostJsonResponseDecryptData(String url, String postjson, List<String> dataKey) throws Exception {
         String getRanStr = HttpUtils.HttpPostWithJson(url, postjson);
         return dealResponseDecryptData( getRanStr,dataKey);
     }
 
-    private static Map<String ,String> dealResponseDecryptData(String getRanStr, List<String> dataKey) throws Exception {
-        String sessionkey = redisUtil.opsForValue().get("sessionkey");
+    private  Map<String ,String> dealResponseDecryptData(String getRanStr, List<String> dataKey) throws Exception {
+        String sessionkey = redisTemplate.opsForValue().get("sessionkey");
         Map<String ,Object> response = getResponse(getRanStr);
         Map<String ,String> perDatas = new HashMap<>();
         if(response!= null){
@@ -76,8 +78,8 @@ public class ResolveResponUtils {
         return perDatas;
     }
 
-    private static String dealResponseListDecryptData(String dataKey, String getRanStr) throws Exception {
-        String sessionkey = redisUtil.opsForValue().get("sessionkey");
+    private  String dealResponseListDecryptData(String dataKey, String getRanStr) throws Exception {
+        String sessionkey = redisTemplate.opsForValue().get("sessionkey");
         Map<String ,Object> response = getResponse(getRanStr);
         String perData = "";
         if(response!= null){
@@ -89,7 +91,7 @@ public class ResolveResponUtils {
     }
 
 
-    private static String dealGetResponseData(String dataKey, String getRanStr) throws Exception {
+    private  String dealGetResponseData(String dataKey, String getRanStr) throws Exception {
         Map<String ,Object> response = getResponse(getRanStr);
         String perData = "";
         if (response != null) {
@@ -100,7 +102,7 @@ public class ResolveResponUtils {
         return perData;
     }
 
-    private static Map<String ,Object> getResponse(String getRanStr) {
+    private  Map<String ,Object> getResponse(String getRanStr) {
         Gson gson = new Gson();
         return gson.fromJson(getRanStr, map.getClass());
     }

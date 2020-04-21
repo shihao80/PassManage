@@ -23,15 +23,7 @@ public class Sm3Utils {
     public static final int DEFAULT_KEY_SIZE = 128;
     public static final String ALGORITHM_NAME = "SM3";
 
-    /**
-     * 自动生成密钥
-     *
-     * @return
-     * @explain
-     */
-    public static String generateKey() throws Exception {
-        return new String(Hex.encodeHex(generateKey(DEFAULT_KEY_SIZE),false));
-    }
+
     /**
      * @desc SM3加密算法实现方法
      * @param data
@@ -78,18 +70,6 @@ public class Sm3Utils {
             e.printStackTrace();
             return "";
         }
-    }
-
-    /**
-     * @param keySize
-     * @return
-     * @throws Exception
-     * @explain
-     */
-    public static byte[] generateKey(int keySize) throws Exception {
-        KeyGenerator kg = KeyGenerator.getInstance(ALGORITHM_NAME, BouncyCastleProvider.PROVIDER_NAME);
-        kg.init(keySize, new SecureRandom());
-        return kg.generateKey().getEncoded();
     }
 
 }

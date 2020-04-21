@@ -2,6 +2,10 @@ package com.passManage.us.service.ppassinstant.mapper;
 
 import com.passManage.us.core.service.ICommonMapper;
 import com.passManage.us.model.PpassInstant;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Date;
@@ -17,8 +21,10 @@ import java.math.*;
 
 public interface PpassInstantMapper extends ICommonMapper<PpassInstant,Integer>{
 
-    Integer sendUpdateMsgToUser(PpassInstant ppassInstant);
+    @Update("SELECT COUNT(*) FROM p_pass_instant where pass_expiry < GETDATE()")
+    Integer sendUpdateMsgToUser(@Param("ppassInstat")PpassInstant ppassInstant);
 
+    @Select("SELECT * FROM p_pass_instant where pass_expiry < GETDATE()")
     List<PpassInstant> getOldestDatePassKey();
 
 }

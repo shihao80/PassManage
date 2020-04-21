@@ -3,13 +3,11 @@ package com.passuser.net.controller.user;
 import com.google.gson.Gson;
 import com.mysql.cj.util.StringUtils;
 import com.passuser.net.KeyUtils.Sm4Util;
+import com.passuser.net.utils.CookieUtils;
 import com.passuser.net.utils.HttpUtils;
 import com.passuser.net.utils.Md5TokenGenerator;
-import com.passuser.net.utils.R;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +25,8 @@ public class UserController {
     @Resource
     Md5TokenGenerator tokenGenerator;
 
-    @Autowired
-    private RedisTemplate<String, String> redisUtil;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public String loginUserBySM4(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
@@ -39,7 +38,7 @@ public class UserController {
         Map<String ,Object> map = new HashMap<>();
         Map<String ,Object> publicKey = gson.fromJson(post, map.getClass());
         String sessionkey = (String) publicKey.get("sessionkey");
-        redisUtil.opsForValue().set("sessionkey", sessionkey);
+        redisTemplate.opsForValue().set("sessionkey", sessionkey);
         String jsonUserName = gson.toJson(hashMap);
         String userEncrypt = Sm4Util.encryptEcb(sessionkey, jsonUserName);
         HashMap<String, String> userInfos = new HashMap<>();
@@ -50,8 +49,10 @@ public class UserController {
         Boolean auth = (Boolean) r.get("auth");
         if (auth) {
             String token = tokenGenerator.generate(username, password);
+            CookieUtils.setCookie(request,response,"Authorization", token);
             response.setHeader("Authorization", token);
-            redisUtil.opsForValue().set(token, username);
+            redisTemplate.opsForValue().set(token, username);
+            redisTemplate.opsForValue().set(token+username,System.currentTimeMillis()+"");
         }
         if (auth) {
             return "/PassInstant/passInstant/passInstant.html";
@@ -61,13 +62,24 @@ public class UserController {
     }
 
     @RequestMapping(value = {"/login", "/"}, method = RequestMethod.GET)
-    public String getLoginPage(@RequestHeader(value = "Authorization", required = false) String token) {
+    public String getLoginPage(HttpServletRequest request,HttpServletResponse response) {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
         if (!StringUtils.isNullOrEmpty(token)) {
-            if (redisUtil.opsForValue().get(token) != null) {
+            if (redisTemplate.opsForValue().get(token) != null) {
                 return "/PassInstant/passInstant/passInstant.html";
             }
         }
         return "/login.html";
+    }
+
+    @RequestMapping("logout")
+    public String logout(HttpServletRequest request,HttpServletResponse response){
+        CookieUtils.deleteCookie(request,response,"Authorization");
+        Enumeration em = request.getSession().getAttributeNames();
+        while(em.hasMoreElements()){
+            request.getSession().removeAttribute(em.nextElement().toString());
+        }
+        return "login.html";
     }
 
 }

@@ -2,12 +2,101 @@
  * 密钥管理管理初始化
  */
 var PassInstant = {
-    id: "PassInstantTable",	//表格id
     seItem: null,		//选中的条目
     table: null,
-    layerIndex: -1
+    layerIndex: -1,
+    class : "layui-table",
 };
 
+PassInstant.initload = function () {
+    var $ax = function (url, success, error) {
+        this.url = url;
+        this.type = "post";
+        this.data = {};
+        this.dataType = "json";
+        this.async = false;
+        this.success = success;
+        this.error = error;
+    };
+    $ax.prototype = {
+        start: function () {
+            var me = this;
+
+            if (this.url.indexOf("?") == -1) {
+                this.url = this.url + "?jstime=" + new Date().getTime();
+            } else {
+                this.url = this.url + "&jstime=" + new Date().getTime();
+            }
+
+            $.ajax({
+                type: this.type,
+                url: this.url,
+                dataType: this.dataType,
+                async: this.async,
+                data: this.data,
+                beforeSend: function (data) {
+
+                },
+                success: function (data) {
+                    me.success(data);
+                },
+                error: function (data) {
+                    me.error(data);
+                }
+            });
+        },
+
+        set: function (key, value) {
+            if (typeof key == "object") {
+                for (var i in key) {
+                    if (typeof i == "function")
+                        continue;
+                    this.data[i] = key[i];
+                }
+            } else {
+                this.data[key] = (typeof value == "undefined") ? $("#" + key).val() : value;
+            }
+            return this;
+        },
+
+        setData: function (data) {
+            this.data = data;
+            return this;
+        },
+
+        clear: function () {
+            this.data = {};
+            return this;
+        }
+    };
+
+    window.$ax = $ax;
+}
+/**
+ * 下载密钥
+ */
+PassInstant.downloadPassInstant = function(thisObj) {
+    var passId = $(thisObj).parents("tr").find(".laytable-cell-1-0-0").text();
+    //提交信息
+    var url = "/passInstant/download/"+passId;
+    var form = $("<form></form>").attr("action", url).attr("method", "post");
+    form.appendTo('body').submit().remove();
+}
+/**
+ * 更新密钥
+ */
+PassInstant.updatePassInstant = function(thisObj) {
+    var passId = $(thisObj).parents("tr").find(".laytable-cell-1-0-0").text();
+    //提交信息
+    var ajax = new $ax("/passInstant/update/"+passId, function () {
+        Feng.success("更新成功!");
+        window.parent.PassInstant.table.refresh();
+    }, function (data) {
+        Feng.error("更新失败!" + data.responseJSON.message + "!");
+    });
+    ajax.set(this.passInstantInfoData);
+    ajax.start();
+}
 /**
  * 初始化表格的列
  */
@@ -98,9 +187,10 @@ PassInstant.search = function () {
     PassInstant.table.refresh({query: queryData});
 };
 
-$(function () {
+initPass = function () {
     var defaultColunms = PassInstant.initColumn();
     var table = new BSTable(PassInstant.id, "/passInstant/list", defaultColunms);
     table.setPaginationType("client");
     PassInstant.table = table.init();
-});
+    PassInstant.initload();
+}

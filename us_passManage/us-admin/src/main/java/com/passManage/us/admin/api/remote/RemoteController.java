@@ -1,27 +1,23 @@
 package com.passManage.us.admin.api.remote;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.passManage.us.admin.common.KeyUtils.Sm4Util;
-import com.passManage.us.admin.common.util.JedisConnectionUtils;
+import com.passManage.us.admin.common.util.DateUtils;
 import com.passManage.us.admin.common.util.R;
 import com.passManage.us.admin.rmp.model.SysAdminUser;
 import com.passManage.us.admin.rmp.service.SysAdminUserService;
 import com.passManage.us.core.utils.Md5Util;
-import jdk.internal.org.objectweb.asm.Handle;
-import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import com.passManage.us.model.PpassInstant;
+import com.passManage.us.service.ppassinstant.service.PpassInstantService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.Jedis;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +31,9 @@ public class RemoteController {
 
     @Resource
     private RedisTemplate<String,String> redisUtils;
+
+    @Resource
+    private PpassInstantService ppassInstantService;
 
     @RequestMapping("/remoteauth")
     @ResponseBody
@@ -60,8 +59,65 @@ public class RemoteController {
         redisUtils.opsForValue().set(username, sessionkey);
     }
 
-    @RequestMapping("/getKeyList/{user}")
-    public void getKeyList(@PathVariable("user")String user){
-
+    @RequestMapping("/getKeyList/{username}")
+    @ResponseBody
+    public R getKeyList(HttpServletRequest request,@PathVariable("username")String user){
+        Map<String ,Object> hashMap = new HashMap<>();
+        Map<String ,Object> paramMap = new HashMap<>();
+        paramMap.put("username",user);
+        List<SysAdminUser> modelList = sysAdminUserService.getModelList(paramMap);
+        hashMap.put("passUserid",modelList.get(0).getId());
+        List<PpassInstant> ppassInstantList = ppassInstantService.getModelList(hashMap);
+        String sessionKey = redisUtils.opsForValue().get(user);
+        Gson gson =new Gson();
+        String ppassInstant = gson.toJson(ppassInstantList);
+        String sm4Post = Sm4Util.encryptEcb(sessionKey, ppassInstant);
+        return R.ok().put("encryptData", sm4Post);
     }
+
+    @RequestMapping("/keySaveJson/{userName}")
+    @ResponseBody
+    public R uploadUserKey(@RequestBody PpassInstant ppassInstant,@PathVariable("userName")String userName){
+        Map<String,Object> hashMap = new HashMap<>();
+        hashMap.put("username",userName);
+        List<SysAdminUser> modelList = sysAdminUserService.getModelList(hashMap);
+        ppassInstant.setPassUserid(Integer.parseInt(modelList.get(0).getId()+""));
+        int i = ppassInstantService.insertModel(ppassInstant);
+        boolean flag = i == 1;
+        String sessionkey = redisUtils.opsForValue().get(userName);
+        String flagStr = Sm4Util.encryptEcb(sessionkey, flag + "");
+        return R.ok().put("flag",flagStr).put("keyId",ppassInstant.getPassId());
+    }
+
+    @RequestMapping("/getKeyById/{keyId}/{username}")
+    @ResponseBody
+    public R returnKeyById(@PathVariable("keyId")String keyId,@PathVariable("username")String username){
+        Map<String,Object> hashMap = new HashMap<>();
+        hashMap.put("passId",keyId);
+        List<PpassInstant> perPass = ppassInstantService.getModelList(hashMap);
+        String sessionKey = redisUtils.opsForValue().get(username);
+        String sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+        return R.ok().put("keydata",sm4Key);
+    }
+
+    @RequestMapping(value = "/updateKey/{keyId}/{username}",method = RequestMethod.GET)
+    @ResponseBody
+    public R updateKeyString(@PathVariable("keyId")String keyId,@PathVariable("username")String username){
+        Map<String,Object> hashMap = new HashMap<>();
+        hashMap.put("passId",keyId);
+        PpassInstant ppassInstant = ppassInstantService.getModelList(hashMap).get(0);
+        Date passExpiry = ppassInstant.getPassExpiry();
+        ppassInstant.setPassExpiry(DateUtils.rollDay(passExpiry,30));
+        int count = ppassInstantService.updateModel(ppassInstant);
+        Boolean flag = false;
+        String sessionkey = redisUtils.opsForValue().get(username);
+        if(count==1){
+            flag =true;
+        }else{
+            flag =false;
+        }
+        String flagdata = Sm4Util.encryptEcb(sessionkey, flag + "");
+        return R.ok().put("flag",flagdata);
+    }
+
 }

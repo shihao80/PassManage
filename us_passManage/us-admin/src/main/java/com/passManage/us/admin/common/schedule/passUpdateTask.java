@@ -16,7 +16,7 @@ import java.util.List;
 public class passUpdateTask {
     @Autowired
     private PpassInstantService ppassInstantService;
-    @Scheduled(cron = "0/5 * * * * ? ") // 间隔5秒执行
+    @Scheduled(cron = "0/3600 * * * * ? ") // 间隔5秒执行
     public void passUpdate() {
         List<PpassInstant> oldestDatePassKey = ppassInstantService.getOldestDatePassKey();
         Integer count = ppassInstantService.updateKeyAlertByPassKeyList(oldestDatePassKey);

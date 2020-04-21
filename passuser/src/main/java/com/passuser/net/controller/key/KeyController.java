@@ -6,9 +6,14 @@ import com.google.gson.reflect.TypeToken;
 import com.passuser.net.KeyUtils.*;
 import com.passuser.net.annotation.AuthToken;
 import com.passuser.net.entity.PpassInstant;
+import com.passuser.net.utils.CookieUtils;
 import com.passuser.net.utils.DateUtils;
 import com.passuser.net.utils.R;
 import com.passuser.net.utils.ResolveResponUtils;
+import lombok.SneakyThrows;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,12 +21,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
 @RequestMapping("/passInstant")
 public class KeyController {
+
+    @Resource
+    private RedisTemplate<String,String> redisTemplate;
+
+    @Autowired
+    private ResolveResponUtils resolveResponUtils;
+
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     private String PREFIX = "/PassInstant/passInstant/";
 
@@ -44,101 +61,142 @@ public class KeyController {
     @RequestMapping("/list")
     @AuthToken
     @ResponseBody
-    public Object getKeyList(HttpServletRequest request) throws Exception {
-        String user = (String) request.getAttribute("user");
+    public String getKeyList(HttpServletRequest request) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String username = redisTemplate.opsForValue().get(token);
         List<String> strList = new ArrayList<>();
         strList.add("encryptData");
-        Map<String, String> encryptData = ResolveResponUtils.getGetResponseDecryptData("http://localhost:18088/remote/getKeyList/" + user, null, strList);
+        Map<String, String> encryptData = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/getKeyList/" + username, null, strList);
         Gson gson = new Gson();
         List<PpassInstant> nowPassInstant = gson.fromJson(encryptData.get("encryptData"), new TypeToken<List<PpassInstant>>() {
         }.getType());
-        nowPassInstant.sort(new Comparator<PpassInstant>() {
-            @Override
-            public int compare(PpassInstant o1, PpassInstant o2) {
-                if (o1.getPassExpiry().getTime() > o2.getPassExpiry().getTime()) {
-                    return 1;
-                } else if (o1.getPassExpiry().getTime() < o2.getPassExpiry().getTime()) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            }
-        });
-        return nowPassInstant;
+        Map<String,Object> hashMap = new HashMap<>();
+        hashMap.put("code","0");
+        hashMap.put("data",nowPassInstant);
+        String postJSON = gson.toJson(hashMap);
+        return postJSON;
     }
 
     @RequestMapping("/add")
     @AuthToken
-    @ResponseBody
-    public R generateKeyAndUpload(@ModelAttribute PpassInstant ppassInstant,HttpServletRequest request) throws Exception {
+    public String generateKeyAndUpload(PpassInstant ppassInstant,HttpServletRequest request) throws Exception {
         String passType = ppassInstant.getPassType();
-        String user =(String) request.getAttribute("user");
+        ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(),"yyyy-MM-dd hh:mm:ss"));
         switch (passType) {
-            case ("SM4"):
-                String sm4key = Sm4Util.generateKey();
-                Map<String, String> SM4flag = resolveSetPpassInstant(ppassInstant, request, sm4key);
-                updateRandomStrKeyID(user, SM4flag);
-                return SM4flag.get("flag").equals("true") ? R.ok() : R.error();
-            case ("SM3"):
-                String sm3key = Sm3Utils.generateKey();
-                Map<String, String> SM3flag = resolveSetPpassInstant(ppassInstant, request, sm3key);
-                updateRandomStrKeyID(user, SM3flag);
-                return SM3flag.get("flag").equals("true") ? R.ok() : R.error();
-            case ("SM2"):
-                String sm2key = getSM2KeyPairToJSON();
-                Map<String, String> SM2flag = resolveSetPpassInstant(ppassInstant, request, sm2key);
-                updateRandomStrKeyID(user, SM2flag);
-                return SM2flag.get("flag").equals("true") ? R.ok() : R.error();
+            case "SM4":
+                Map<String, String> SM4flag = generateSM4Key(ppassInstant, request);
+                SM4flag.put("keyId",ppassInstant.getPassId()+"");
+                return SM4flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
+            case "SM2":
+                Map<String, String> SM2flag = generateSM2key(ppassInstant, request);
+                SM2flag.put("keyId",ppassInstant.getPassId()+"");
+                return SM2flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
             default:
-                return R.error("秘钥类型错误");
+                return "404.html";
         }
 
     }
 
-
-    private void updateRandomStrKeyID(String user, Map<String, String> SM4flag) {
-        String keyId = SM4flag.get("keyId");
-        ResolveResponUtils.resolveGetRespons("http://localhost:18087/remote/updateran/"+user+"/"+keyId,null);
+    private Map<String, String> generateSM2key(PpassInstant ppassInstant, HttpServletRequest request) throws Exception {
+        String sm2key = getSM2KeyPairToJSON();
+        return resolveSetPpassInstant(ppassInstant, request, sm2key);
     }
+
+    private Map<String, String> generateSM4Key(PpassInstant ppassInstant, HttpServletRequest request) throws Exception {
+        String sm4key = Sm4Util.generateKey();
+        return resolveSetPpassInstant(ppassInstant, request, sm4key);
+    }
+
 
     @RequestMapping("updateKey/{keyId}")
     @AuthToken
-    @ResponseBody
-    public R updateKeyAndUpload(@PathVariable("keyId") String keyId, @ModelAttribute PpassInstant ppassInstant, Model model,HttpServletRequest request) throws Exception {
+    public String updateKeyAndUpload(@PathVariable("keyId") String keyId, @ModelAttribute PpassInstant ppassInstant, Model model,HttpServletRequest request) throws Exception {
         String passType = ppassInstant.getPassType();
         switch (passType) {
             case ("SM4"):
                 String sm4key = Sm4Util.generateKey();
                 Map<String, String> SM4flag = resolveSetPpassInstantById(keyId, ppassInstant, request, sm4key);
-                return SM4flag.get("flag").equals("true") ? R.ok() : R.error();
-            case ("SM3"):
-                String sm3key = Sm3Utils.generateKey();
-                Map<String, String> SM3flag = resolveSetPpassInstantById(keyId, ppassInstant, request, sm3key);
-                return SM3flag.get("flag").equals("true") ? R.ok() : R.error();
+                return SM4flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
             case ("SM2"):
                 String sm2key = getSM2KeyPairToJSON();
                 Map<String, String> SM2flag = resolveSetPpassInstantById(keyId, ppassInstant, request, sm2key);
-                return SM2flag.get("flag").equals("true") ? R.ok() : R.error();
+                return SM2flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
             default:
-                return R.error("秘钥类型错误");
+                return "404.html";
         }
     }
 
+    @RequestMapping("download/{keyId}")
+    @AuthToken
+    @ResponseBody
+    public String download(@PathVariable("keyId") String keyId, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String username = redisTemplate.opsForValue().get(token);
+        String key = downloadKeyByKeyId(keyId,username);
+        // 以流的形式下载文件。
+        InputStream fis = new BufferedInputStream(new ByteArrayInputStream(key.getBytes("utf-8")));
+        byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+        // 清空response
+        response.reset();
+        // 设置response的Header
+        response.addHeader("Content-Disposition", "attachment;filename=" + new String("key.txt".getBytes()));
+        response.addHeader("Content-Length", "" + key.length());
+        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+        response.setContentType("application/octet-stream");
+        toClient.write(buffer);
+        toClient.flush();
+        toClient.close();
+        return "下载成功";
+    }
+
+    @RequestMapping("update/{keyId}")
+    @AuthToken
+    @ResponseBody
+    public String updateKey(@PathVariable("keyId") String keyId, HttpServletRequest request) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String username = redisTemplate.opsForValue().get(token);
+        String flag = updateByKeyId(keyId,username);
+        return flag.equals("true")?"/passInstant":"404.html";
+    }
+
+    private String updateByKeyId(String keyId, String username) throws Exception {
+        List<String> flagList = new ArrayList<>();
+        flagList.add("flag");
+        Map<String, String> flagMap = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/updateKey/" + keyId + "/" + username, null, flagList);
+        String flag = flagMap.get("flag");
+        return flag;
+    }
+
+    private String downloadKeyByKeyId(String keyId,String username) throws Exception {
+        List<String> keyStr = new ArrayList<>();
+        keyStr.add("keydata");
+        Map<String, String> getKeyData = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/getKeyById/" + keyId +"/" + username, null, keyStr);
+        String keydata = getKeyData.get("keydata");
+        String ranstr = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + keyId, null, "ranstr");
+        byte[] keyOrigin = XORUtils.encrypt(keydata.getBytes(), ranstr.getBytes());
+        String keyStrs = ByteArrayUtil.toHexString(keyOrigin);
+        return keyStrs;
+    }
+
     private Map<String, String> resolveSetPpassInstantById(String keyId, PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
-        String userName = (String) request.getAttribute("user");
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String userName = redisTemplate.opsForValue().get(token);
         String postJson = getKeyPostBody(ppassInstant, key, userName);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
-        return ResolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
+        return resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
     }
 
     private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName) throws Exception {
-        String random = ResolveResponUtils.getGetResponseData("http://localhsot:18087/remote/ranstr/128/" + userName, null, "random");
+        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/128/" + userName +"/"+ppassInstant.getPassId(), null, "random");
         byte[] encryptKey = XORUtils.encrypt(key.getBytes(), random.getBytes());
         String keyStr = ByteArrayUtil.toHexString(encryptKey);
-        ppassInstant.setPassCreatetime(new Date());
-        ppassInstant.setPassExpiry(DateUtils.rollDay(new Date(), 31));
+        ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(),"yyyy-MM-dd hh:mm:ss"));
+        ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31),"yyyy-MM-dd"));
         ppassInstant.setPassLength(keyStr.length());
+        ppassInstant.setPassChildfir(keyStr);
         Gson gson = new Gson();
         return gson.toJson(ppassInstant);
     }
@@ -155,12 +213,13 @@ public class KeyController {
     }
 
     private Map<String, String> resolveSetPpassInstant(@ModelAttribute PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
-        String userName = (String) request.getAttribute("user");
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String userName = redisTemplate.opsForValue().get(token);
         String postJson = getKeyPostBody(ppassInstant, key, userName);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
         strList.add("keyId");
-        Map<String, String> postList = ResolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/remote/keySaveJson/" + userName, postJson, strList);
+        Map<String, String> postList = resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keySaveJson/" + userName, postJson, strList);
         return postList;
     }
 }

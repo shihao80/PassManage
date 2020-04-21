@@ -24,8 +24,8 @@ public class PpassInstant implements Serializable{
     private String passChildfir;//第一子密钥
     private String passChildsec;//第二子密钥
     private String passChildthi;//第三子密钥
-    @DateTimeFormat( pattern = "yyyy-MM-dd HH:mm:ss" )
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @DateTimeFormat( pattern = "yyyy-MM-dd" )
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone="GMT+8")
     private Date passExpiry;//密钥有效期
     @DateTimeFormat( pattern = "yyyy-MM-dd HH:mm:ss" )
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")

@@ -18,7 +18,7 @@ spring:
         cache: false
     redis:
         #所有的redis 缓存都会加入下面的前缀 方便管理
-        keyPrefix: us-admin.
+        keyPrefix:
         # redis地址 单机模式 参见RedisConfig
         host: localhost
         #redis端口 单机模式

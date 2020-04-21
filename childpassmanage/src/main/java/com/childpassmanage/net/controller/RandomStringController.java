@@ -16,20 +16,21 @@ public class RandomStringController {
     @Autowired
     private RandomService randomService;
 
-    @RequestMapping(value = "/remote/ranstr/{length}/{userName}",method = RequestMethod.GET)
+    @RequestMapping(value = "remote/ranstr/{length}/{userName}/{keyId}",method = RequestMethod.GET)
     @ResponseBody
-    public R getRandomString(@PathVariable("length")String length, @PathVariable("userName") String userName){
+    public R getRandomString(@PathVariable("length")String length, @PathVariable("userName") String userName,@PathVariable("keyId")String keyId){
         String random = RandomStringUtils.random(Integer.parseInt(length), false, true);
         R r = new R();
         r.put("random", random);
-        Boolean flag = randomService.insertRandomStringByUserName(userName, random);
+        Boolean flag = randomService.insertRandomStringByUserName(userName, random,keyId);
         return flag ? r:R.error();
     }
 
-    @RequestMapping(value = "updateran/{userName}/{keyId}",method = RequestMethod.GET)
+
+    @RequestMapping(value = "remote/ranstr/{keyId}",method = RequestMethod.GET)
     @ResponseBody
-    public R updateRandomKeyId(@PathVariable("userName")String userName, @PathVariable("keyId") String keyId){
-        Boolean flag = randomService.updateRandomStringByUserNameAndKey(userName, Integer.parseInt(keyId));
-        return flag ? R.ok():R.error();
+    public R getKeyRanByKeyId(@PathVariable("keyId")String keyId){
+        String ranStr = randomService.getRandomStringByKeyId(keyId);
+        return R.ok().put("ranstr",ranStr);
     }
 }

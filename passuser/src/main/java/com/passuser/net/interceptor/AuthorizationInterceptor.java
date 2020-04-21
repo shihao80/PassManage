@@ -2,18 +2,20 @@ package com.passuser.net.interceptor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.passuser.net.annotation.AuthToken;
-
 import com.passuser.net.utils.ConstantKit;
+import com.passuser.net.utils.CookieUtils;
+import com.passuser.net.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -28,10 +30,11 @@ import java.util.concurrent.TimeUnit;
  * @date 2019/1/1815:50
  */
 @Slf4j
+@Component
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private RedisTemplate<String ,String> redisUtil;
+    private RedisTemplate<String, String> redisTemplate;
 
     //存放鉴权信息的Header名称，默认是Authorization
     private String httpHeaderName = "Authorization";
@@ -48,7 +51,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     public static final String REQUEST_CURRENT_KEY = "REQUEST_CURRENT_KEY";
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler){
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
@@ -58,27 +61,28 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         // 如果打上了AuthToken注解则需要验证token
         if (method.getAnnotation(AuthToken.class) != null || handlerMethod.getBeanType().getAnnotation(AuthToken.class) != null) {
 
-            String token = request.getHeader(httpHeaderName);
+            String token = CookieUtils.getCookieValue(request, httpHeaderName);
+//            String token = request.getHeader(httpHeaderName);
  //           String token = request.getParameter(httpHeaderName);
             log.info("Get token from request is {} ", token);
             String username = "";
             if (token != null && token.length() != 0) {
-                username = redisUtil.opsForValue().get(token);
+                username = redisTemplate.opsForValue().get(token);
                 log.info("Get username from Redis is {}", username);
             }
             if (username != null && !username.trim().equals("")) {
                 //log.info("token birth time is: {}",jedis.get(username+token));
-                Long tokeBirthTime = Long.valueOf(redisUtil.opsForValue().get(token + username));
+                Long tokeBirthTime = Long.valueOf(redisTemplate.opsForValue().get(token + username));
                 log.info("token Birth time is: {}", tokeBirthTime);
                 Long diff = System.currentTimeMillis() - tokeBirthTime;
                 log.info("token is exist : {} ms", diff);
                 //重新设置Redis中的token过期时间
                 if (diff > ConstantKit.TOKEN_RESET_TIME) {
-                    redisUtil.expire(username, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
-                    redisUtil.expire(token, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
+                    redisTemplate.expire(username, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
+                    redisTemplate.expire(token, ConstantKit.TOKEN_EXPIRE_TIME, TimeUnit.MINUTES);
                     log.info("Reset expire time success!");
                     Long newBirthTime = System.currentTimeMillis();
-                    redisUtil.opsForValue().set(token + username, newBirthTime.toString());
+                    redisTemplate.opsForValue().set(token + username, newBirthTime.toString());
                 }
 
                 //用完关闭
