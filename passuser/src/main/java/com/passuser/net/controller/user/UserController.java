@@ -3,9 +3,9 @@ package com.passuser.net.controller.user;
 import com.google.gson.Gson;
 import com.mysql.cj.util.StringUtils;
 import com.passuser.net.KeyUtils.Sm4Util;
-import com.passuser.net.utils.CookieUtils;
-import com.passuser.net.utils.HttpUtils;
-import com.passuser.net.utils.Md5TokenGenerator;
+import com.passuser.net.annotation.AuthToken;
+import com.passuser.net.utils.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,15 +15,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class UserController {
 
     @Resource
     Md5TokenGenerator tokenGenerator;
+
+    @Autowired
+    private ResolveResponUtils resolveResponUtils;
 
     @Resource
     private RedisTemplate<String, String> redisTemplate;
@@ -82,4 +83,60 @@ public class UserController {
         return "login.html";
     }
 
+    @RequestMapping("/user_userAdd")
+    public String getUserRegister(){
+        return "/system/user/user_teacherAdd.html";
+    }
+
+    @RequestMapping("/changePassword")
+    public String changPassword(){
+        return "/system/user/user_changPwd";
+    }
+
+//    /**
+//     * 添加用户
+//     */
+//    @RequestMapping("/addUser")
+//    public String addUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
+//
+//        this.userService.insert(UserFactory.createUser(user));
+//        return SUCCESS_TIP;
+//    }
+
+    /**
+     * 修改密码
+     */
+    @RequestMapping(value = "/changPassword",method = RequestMethod.POST)
+    @AuthToken
+    public String addUser(@RequestParam("oldpassword") String oldpassword, @RequestParam("firpassword") String firpassword, @RequestParam("secpassword") String secpassword, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HashMap<String, String> hashMap = new HashMap<>();
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String username = redisTemplate.opsForValue().get(token);
+        if (!firpassword.equals(secpassword)) {
+            return "404.html";
+        }
+        Gson gson = new Gson();
+        hashMap.put("oldpassword", oldpassword);
+        hashMap.put("newpassword", firpassword);
+        hashMap.put("username", username);
+        String hashMapJson = gson.toJson(hashMap);
+        String sessionkey = redisTemplate.opsForValue().get("sessionkey");
+        String userEncrypt = Sm4Util.encryptEcb(sessionkey, hashMapJson);
+        R r = R.ok().put("encryptData", userEncrypt);
+        String postJson = gson.toJson(r);
+        String flag = resolveResponUtils.getPostJsonResponseData("http://localhost:18088/us-admin/remote/changpwd/" + username, postJson, "flag");
+        return flag.equals("true")?"redirect:/passInstant":"404.html";
+    }
+
+    /**
+     * 用户注册
+     */
+    @RequestMapping(value = "register",method = RequestMethod.POST)
+    public String register(@RequestParam("username")String username,@RequestParam("password")String password) throws Exception {
+        Map<String,String> hashMap = new HashMap<>();
+        hashMap.put("username",username);
+        hashMap.put("password",password);
+        String flag = resolveResponUtils.getPostResponseData("http://localhost:18088/us-admin/remote/register/", hashMap, "flag");
+        return flag.equals("true")?"redirect:/login":"404.html";
+    }
 }

@@ -1,16 +1,15 @@
 package com.childpassmanage.net.controller;
 
+import com.childpassmanage.net.pojo.UserNamePO;
 import com.childpassmanage.net.service.UserNameService;
 import com.childpassmanage.net.utils.HttpUtils;
 import com.childpassmanage.net.utils.R;
 import com.childpassmanage.net.utils.Sm4Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 
 @Controller
@@ -34,5 +33,14 @@ public class LinkUpassServerController {
         } else {
             return R.error();
         }
+    }
+
+    @RequestMapping("/remote/setUserName/{username}")
+    public void setUserName(@PathVariable("username")String userName){
+        UserNamePO userNamePO = new UserNamePO();
+        userNamePO.setUserName(userName);
+        userNamePO.setCreateDate(new Date());
+        userNamePO.setIfClose(0);
+        userNameService.insertUserName(userNamePO);
     }
 }

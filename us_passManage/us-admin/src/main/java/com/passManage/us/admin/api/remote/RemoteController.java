@@ -1,10 +1,13 @@
 package com.passManage.us.admin.api.remote;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.passManage.us.admin.common.KeyUtils.Sm4Util;
 import com.passManage.us.admin.common.util.DateUtils;
+import com.passManage.us.admin.common.util.HttpUtils;
 import com.passManage.us.admin.common.util.R;
+import com.passManage.us.admin.common.util.ResolveResponUtils;
 import com.passManage.us.admin.rmp.model.SysAdminUser;
 import com.passManage.us.admin.rmp.service.SysAdminUserService;
 import com.passManage.us.core.utils.Md5Util;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +38,10 @@ public class RemoteController {
 
     @Resource
     private PpassInstantService ppassInstantService;
+
+    @Resource
+    private ResolveResponUtils resolveResponUtils;
+
 
     @RequestMapping("/remoteauth")
     @ResponseBody
@@ -120,4 +128,41 @@ public class RemoteController {
         return R.ok().put("flag",flagdata);
     }
 
+    @RequestMapping("changpwd/{username}")
+    @ResponseBody
+    public R changpwd(HttpServletRequest request, HttpServletResponse response,@RequestBody R r,@PathVariable("username")String username){
+        String sessionKey = redisUtils.opsForValue().get(username);
+        String encryptData = Sm4Util.decryptEcb(sessionKey, r.get("encryptData")+"");
+        Gson gson = new Gson();
+        JSONObject jsonObject = gson.fromJson(encryptData, JSONObject.class);
+        String oldpasswordMD5 = Md5Util.md5Encode(jsonObject.get("oldpassword").toString().replaceAll("\"", ""));
+        Map<String, Object> hashMap = new HashMap<>();
+        hashMap.put("username", username);
+        hashMap.put("password", oldpasswordMD5);
+        List<SysAdminUser> modelList = sysAdminUserService.getModelList(hashMap);
+        if(!CollectionUtils.isEmpty(modelList)){
+            SysAdminUser sysAdminUser = modelList.get(0);
+            sysAdminUser.setPassword( Md5Util.md5Encode(jsonObject.get("newpassword").toString().replaceAll("\"", "")));
+            sysAdminUserService.updateModel(sysAdminUser);
+            return new R().put("flag", true);
+        } else {
+            return new R().put("flag", false);
+        }
+    }
+
+    @RequestMapping("register")
+    @ResponseBody
+    public R remoteRegister(@RequestParam("username")String username,@RequestParam("password")String password) throws Exception {
+        SysAdminUser sysAdminUser = new SysAdminUser();
+        sysAdminUser.setRoleId(1L);
+        sysAdminUser.setEnabled(true);
+        sysAdminUser.setAccountNonLocked(false);
+        sysAdminUser.setAccountNonExpired(false);
+        sysAdminUser.setCredentialsNonExpired(false);
+        sysAdminUser.setUsername(username);
+        sysAdminUser.setPassword(Md5Util.md5Encode(password));
+        sysAdminUserService.insertModel(sysAdminUser);
+        HttpUtils.get("http://localhost:18087/remote/setUserName/"+username,null);
+        return R.ok().put("flag","true");
+    }
 }

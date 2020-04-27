@@ -1,24 +1,28 @@
 package com.passManage.us.service.ppassinstant.service.impl;
 
+import com.passManage.us.core.utils.CollectionUtil;
+import com.passManage.us.core.utils.ListUtil;
+import com.passManage.us.model.PpassOld;
 import com.passManage.us.service.ppassinstant.mapper.PpassInstantMapper;
 import com.passManage.us.service.ppassinstant.service.PpassInstantService;
 import com.passManage.us.model.PpassInstant;
 import com.passManage.us.core.service.CommonServiceImpl;
 import com.passManage.us.core.utils.StringUtil;
 
+import com.passManage.us.service.ppassold.mapper.PpassOldMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import com.passManage.us.core.utils.CopyUtil;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
+import java.util.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.math.*;
+import java.util.stream.Collectors;
+
 /**
 * 代码为自动生成 Created by www.magicalcoder.com
 * 软件作者：何栋宇 qq:709876443
@@ -27,9 +31,13 @@ import java.math.*;
 */
 
 @Service
+@Transactional
 public class PpassInstantServiceImpl extends CommonServiceImpl<PpassInstant,Integer> implements PpassInstantService,InitializingBean{
     @Resource
     private PpassInstantMapper ppassInstantMapper;
+
+    @Resource
+    private PpassOldMapper ppassOldMapper;
 
     @Override
     public void afterPropertiesSet() {
@@ -59,8 +67,13 @@ public class PpassInstantServiceImpl extends CommonServiceImpl<PpassInstant,Inte
     public Integer updateKeyAlertByPassKeyList(List<PpassInstant> oldestDatePassKey) {
         Integer count = 0;
         for (PpassInstant ppassInstant : oldestDatePassKey) {
-            count += ppassInstantMapper.sendUpdateMsgToUser(ppassInstant);
+            PpassOld ppassOld = new PpassOld();
+            BeanUtils.copyProperties(ppassInstant,ppassOld);
+            ppassOldMapper.insertModel(ppassOld);
         }
+        Set<Integer> passOldSet = oldestDatePassKey.stream().map(PpassInstant::getPassId).collect(Collectors.toSet());
+        if(!CollectionUtil.isEmpty(passOldSet)){
+        count = ppassInstantMapper.deleteModelByIds(passOldSet);}
         return count;
     }
 }

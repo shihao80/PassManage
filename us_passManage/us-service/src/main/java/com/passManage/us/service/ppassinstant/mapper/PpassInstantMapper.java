@@ -21,10 +21,10 @@ import java.math.*;
 
 public interface PpassInstantMapper extends ICommonMapper<PpassInstant,Integer>{
 
-    @Update("SELECT COUNT(*) FROM p_pass_instant where pass_expiry < GETDATE()")
+    @Update("SELECT * FROM p_pass_instant where pass_expiry < NOW()")
     Integer sendUpdateMsgToUser(@Param("ppassInstat")PpassInstant ppassInstant);
 
-    @Select("SELECT * FROM p_pass_instant where pass_expiry < GETDATE()")
+    @Select("SELECT * FROM p_pass_instant where pass_expiry < NOW()")
     List<PpassInstant> getOldestDatePassKey();
 
 }

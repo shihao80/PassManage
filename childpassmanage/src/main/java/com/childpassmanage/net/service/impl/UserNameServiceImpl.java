@@ -5,8 +5,10 @@ import com.childpassmanage.net.pojo.UserNamePO;
 import com.childpassmanage.net.service.UserNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserNameServiceImpl implements UserNameService {
     @Autowired
     private UserNameMapper userMapper;
@@ -21,5 +23,10 @@ public class UserNameServiceImpl implements UserNameService {
         }else{
             return false;
         }
+    }
+
+    @Override
+    public void insertUserName(UserNamePO userNamePO) {
+        userMapper.insert(userNamePO);
     }
 }
