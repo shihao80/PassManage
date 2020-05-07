@@ -98,7 +98,7 @@ public class KeyController {
     }
 
     private Map<String, String> generateSM2key(PpassInstant ppassInstant, HttpServletRequest request) throws Exception {
-        String sm2key = getSM2KeyPairToJSON();
+        Map<String, String> sm2key = getSM2KeyPairToJSON();
         return resolveSetPpassInstant(ppassInstant, request, sm2key);
     }
 
@@ -118,8 +118,8 @@ public class KeyController {
                 Map<String, String> SM4flag = resolveSetPpassInstantById(keyId, ppassInstant, request, sm4key);
                 return SM4flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
             case ("SM2"):
-                String sm2key = getSM2KeyPairToJSON();
-                Map<String, String> SM2flag = resolveSetPpassInstantById(keyId, ppassInstant, request, sm2key);
+                Map<String,String> sm2key = getSM2KeyPairToJSON();
+                Map<String, String> SM2flag = resolveSetSM2PpassInstantById(keyId, ppassInstant, request, sm2key);
                 return SM2flag.get("flag").equals("true") ? PREFIX + "passInstant.html" : "404.html";
             default:
                 return "404.html";
@@ -175,9 +175,27 @@ public class KeyController {
         Map<String, String> getKeyData = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/getKeyById/" + keyId +"/" + username, null, keyStr);
         String keydata = getKeyData.get("keydata");
         String ranstr = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + keyId, null, "ranstr");
+        if(keydata.contains("pubKey:")){
+            String[] split = keydata.split("pubKey:");
+            String[] split1 = split[1].split("priKey:");
+            byte[] pubKey = XORUtils.encrypt(split1[0].getBytes(), ranstr.getBytes());
+            byte[] priKey = XORUtils.encrypt(split1[1].getBytes(), ranstr.getBytes());
+            String pubKeyStr = new String(pubKey);
+            String priKeyStr = new String(priKey);
+            return "pubKey:"+pubKeyStr+"\n\n"+"priKeyStr:"+priKeyStr;
+        }
         byte[] keyOrigin = XORUtils.encrypt(keydata.getBytes(), ranstr.getBytes());
-        String keyStrs = ByteArrayUtil.toHexString(keyOrigin);
+        String keyStrs = new String(keyOrigin);
         return keyStrs;
+    }
+
+    private Map<String, String> resolveSetSM2PpassInstantById(String keyId, PpassInstant ppassInstant, HttpServletRequest request, Map<String, String> key) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String userName = redisTemplate.opsForValue().get(token);
+        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        List<String> strList = new ArrayList<>();
+        strList.add("flag");
+        return resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
     }
 
     private Map<String, String> resolveSetPpassInstantById(String keyId, PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
@@ -189,30 +207,55 @@ public class KeyController {
         return resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
     }
 
-    private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName) throws Exception {
-        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/128/" + userName +"/"+ppassInstant.getPassId(), null, "random");
-        byte[] encryptKey = XORUtils.encrypt(key.getBytes(), random.getBytes());
-        String keyStr = ByteArrayUtil.toHexString(encryptKey);
+    private String getKeyPostBody(PpassInstant ppassInstant, Map<String, String> key, String userName) throws Exception {
+        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/"+key.get("pubKey").length()+"/" + userName +"/"+ppassInstant.getPassId(), null, "random");
+        byte[] privateKey = XORUtils.encrypt(key.get("pubKey").getBytes(), random.getBytes());
+        byte[] publicKey = XORUtils.encrypt(key.get("priKey").getBytes(), random.getBytes());
+        String privateKeyStr = new String(privateKey);
+        String publicKeyStr = new String(publicKey);
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(),"yyyy-MM-dd hh:mm:ss"));
         ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31),"yyyy-MM-dd"));
-        ppassInstant.setPassLength(keyStr.length());
-        ppassInstant.setPassChildfir(keyStr);
+        ppassInstant.setPassLength(privateKeyStr.length());
+        ppassInstant.setPassChildfir(privateKeyStr);
+        ppassInstant.setPassChildsec(publicKeyStr);
         Gson gson = new Gson();
         return gson.toJson(ppassInstant);
     }
 
-    private String getSM2KeyPairToJSON() {
+    private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName) throws Exception {
+        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/"+key.length()+"/" + userName +"/"+ppassInstant.getPassId(), null, "random");
+        byte[] privateKey = XORUtils.encrypt(key.getBytes(), random.getBytes());
+        String privateKeyStr = new String(privateKey);
+        ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(),"yyyy-MM-dd hh:mm:ss"));
+        ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31),"yyyy-MM-dd"));
+        ppassInstant.setPassLength(privateKeyStr.length());
+        ppassInstant.setPassChildfir(privateKeyStr);
+        Gson gson = new Gson();
+        return gson.toJson(ppassInstant);
+    }
+
+    private Map<String, String> getSM2KeyPairToJSON() {
         PCIKeyPair pciKeyPair = SM2Util.genKeyPair();
         String priKey = pciKeyPair.getPriKey();
         String pubKey = pciKeyPair.getPubKey();
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("priKey", priKey);
         hashMap.put("pubKey", pubKey);
-        Gson gson = new Gson();
-        return gson.toJson(hashMap);
+        return hashMap;
     }
 
     private Map<String, String> resolveSetPpassInstant(@ModelAttribute PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String userName = redisTemplate.opsForValue().get(token);
+        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        List<String> strList = new ArrayList<>();
+        strList.add("flag");
+        strList.add("keyId");
+        Map<String, String> postList = resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keySaveJson/" + userName, postJson, strList);
+        return postList;
+    }
+
+    private Map<String, String> resolveSetPpassInstant(@ModelAttribute PpassInstant ppassInstant, HttpServletRequest request, Map<String, String> key) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String userName = redisTemplate.opsForValue().get(token);
         String postJson = getKeyPostBody(ppassInstant, key, userName);

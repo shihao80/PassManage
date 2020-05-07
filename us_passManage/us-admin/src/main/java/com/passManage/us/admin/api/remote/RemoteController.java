@@ -104,7 +104,12 @@ public class RemoteController {
         hashMap.put("passId",keyId);
         List<PpassInstant> perPass = ppassInstantService.getModelList(hashMap);
         String sessionKey = redisUtils.opsForValue().get(username);
-        String sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+        String sm4Key= "";
+        if(perPass.get(0).getPassType().equals("SM2")){
+            sm4Key = Sm4Util.encryptEcb(sessionKey, "pubKey:"+perPass.get(0).getPassChildfir()+"\n\npriKey:"+perPass.get(0).getPassChildsec());
+        }else{
+            sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+        }
         return R.ok().put("keydata",sm4Key);
     }
 
