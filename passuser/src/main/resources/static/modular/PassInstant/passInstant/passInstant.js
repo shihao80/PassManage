@@ -92,7 +92,7 @@ PassInstant.updatePassInstant = function(thisObj) {
         Feng.success("更新成功!");
         window.parent.PassInstant.table.refresh();
     }, function (data) {
-        Feng.error("更新失败!" + data.responseJSON.message + "!");
+        PassInstant.table.refresh();
     });
     ajax.set(this.passInstantInfoData);
     ajax.start();
@@ -173,7 +173,6 @@ PassInstant.delete = function (thisObj) {
         }, function (data) {
             Feng.error("删除失败!" + data.responseJSON.message + "!");
         });
-        ajax.set("passInstantId",this.seItem.id);
         ajax.start();
 };
 

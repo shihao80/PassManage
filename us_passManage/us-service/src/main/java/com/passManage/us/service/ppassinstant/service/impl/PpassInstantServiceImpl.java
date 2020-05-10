@@ -68,7 +68,14 @@ public class PpassInstantServiceImpl extends CommonServiceImpl<PpassInstant,Inte
         Integer count = 0;
         for (PpassInstant ppassInstant : oldestDatePassKey) {
             PpassOld ppassOld = new PpassOld();
-            BeanUtils.copyProperties(ppassInstant,ppassOld);
+            ppassOld.setPassChildfir(ppassInstant.getPassChildfir());
+            ppassOld.setPassChildsec(ppassInstant.getPassChildsec());
+            ppassOld.setPassCreatetime(ppassInstant.getPassCreatetime());
+            ppassOld.setPassExpiry(ppassInstant.getPassExpiry());
+            ppassOld.setPassLength(ppassInstant.getPassLength());
+            ppassOld.setPassName(ppassInstant.getPassName());
+            ppassOld.setPassUserid(ppassInstant.getPassUserid());
+            ppassOld.setPassType(ppassInstant.getPassType());
             ppassOldMapper.insertModel(ppassOld);
         }
         Set<Integer> passOldSet = oldestDatePassKey.stream().map(PpassInstant::getPassId).collect(Collectors.toSet());
