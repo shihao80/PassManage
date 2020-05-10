@@ -1,7 +1,6 @@
 
 package com.passManage.us.web.webservice.goods.service.impl;
 
-import com.passManage.us.service.goods.service.GoodsService;
 import com.passManage.us.web.model.WebGoods;
 import com.passManage.us.web.webservice.goods.mapper.WebGoodsMapper;
 import com.passManage.us.web.webservice.goods.service.WebGoodsService;
@@ -22,8 +21,6 @@ public class WebGoodsServiceImpl implements WebGoodsService {
     @Resource
     private WebGoodsMapper webGoodsMapper;
     //这个是工具生成的 我可以复用
-    @Resource
-    private GoodsService goodsService;
 
 
     @Override

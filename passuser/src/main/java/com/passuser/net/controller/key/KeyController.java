@@ -161,6 +161,24 @@ public class KeyController {
         return flag.equals("true")?"/passInstant":"404.html";
     }
 
+    @RequestMapping("delete/{keyId}")
+    @AuthToken
+    @ResponseBody
+    public String deleteKey(@PathVariable("keyId") String keyId, HttpServletRequest request) throws Exception {
+        String token = CookieUtils.getCookieValue(request, "Authorization");
+        String username = redisTemplate.opsForValue().get(token);
+        String flag = deleteByKeyId(keyId,username);
+        return flag.equals("true")?"/passInstant":"404.html";
+    }
+
+    private String deleteByKeyId(String keyId, String username) throws Exception {
+        List<String> flagList = new ArrayList<>();
+        flagList.add("flag");
+        Map<String, String> flagMap = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/deleteKey/" + keyId + "/" + username, null, flagList);
+        String flag = flagMap.get("flag");
+        return flag;
+    }
+
     private String updateByKeyId(String keyId, String username) throws Exception {
         List<String> flagList = new ArrayList<>();
         flagList.add("flag");

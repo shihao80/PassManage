@@ -12,7 +12,10 @@ import com.passManage.us.admin.rmp.model.SysAdminUser;
 import com.passManage.us.admin.rmp.service.SysAdminUserService;
 import com.passManage.us.core.utils.Md5Util;
 import com.passManage.us.model.PpassInstant;
+import com.passManage.us.model.PpassOld;
 import com.passManage.us.service.ppassinstant.service.PpassInstantService;
+import com.passManage.us.service.ppassold.service.PpassOldService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -38,6 +41,9 @@ public class RemoteController {
 
     @Resource
     private PpassInstantService ppassInstantService;
+
+    @Resource
+    private PpassOldService ppassOldService;
 
     @Resource
     private ResolveResponUtils resolveResponUtils;
@@ -159,7 +165,7 @@ public class RemoteController {
     @ResponseBody
     public R remoteRegister(@RequestParam("username")String username,@RequestParam("password")String password) throws Exception {
         SysAdminUser sysAdminUser = new SysAdminUser();
-        sysAdminUser.setRoleId(1L);
+        sysAdminUser.setRoleId(2L);
         sysAdminUser.setEnabled(true);
         sysAdminUser.setAccountNonLocked(false);
         sysAdminUser.setAccountNonExpired(false);
@@ -168,6 +174,17 @@ public class RemoteController {
         sysAdminUser.setPassword(Md5Util.md5Encode(password));
         sysAdminUserService.insertModel(sysAdminUser);
         HttpUtils.get("http://localhost:18087/remote/setUserName/"+username,null);
+        return R.ok().put("flag","true");
+    }
+
+    @RequestMapping("/deleteKey/{keyId}/{userName}")
+    @ResponseBody
+    public R deleteKey(@PathVariable("keyId")String keyId, @PathVariable("userName")String userName){
+        PpassInstant model = ppassInstantService.getModel(Integer.parseInt(keyId));
+        PpassOld ppassOld = new PpassOld();
+        BeanUtils.copyProperties(model,ppassOld);
+        ppassOldService.insertModel(ppassOld);
+        ppassInstantService.deleteModel(Integer.parseInt(keyId));
         return R.ok().put("flag","true");
     }
 }

@@ -12,7 +12,7 @@
     <script type="text/html" id="tableColToolbar">
         <a class="layui-btn layui-btn-xs" lay-event="download" onclick="PassInstant.downloadPassInstant(this)">下载密钥</a>
         <a class="layui-btn layui-btn-xs" lay-event="update" onclick="PassInstant.updatePassInstant(this)">更新密钥</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="PassInstant.delete()">删除密钥</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" onclick="PassInstant.delete(this)">删除密钥</a>
     </script>
 </head>
 <body class="layui-form" style="background-color:#eee;padding: 20px;" onload='initPass()'>

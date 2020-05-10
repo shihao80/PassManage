@@ -165,9 +165,9 @@ PassInstant.openPassInstantDetail = function () {
 /**
  * 删除密钥管理
  */
-PassInstant.delete = function () {
-    if (this.check()) {
-        var ajax = new $ax(Feng.ctxPath + "/passInstant/delete", function (data) {
+PassInstant.delete = function (thisObj) {
+    var passId = $(thisObj).parents("tr").find(".laytable-cell-1-0-0").text();
+        var ajax = new $ax(Feng.ctxPath + "/passInstant/delete/"+passId, function (data) {
             Feng.success("删除成功!");
             PassInstant.table.refresh();
         }, function (data) {
@@ -175,7 +175,6 @@ PassInstant.delete = function () {
         });
         ajax.set("passInstantId",this.seItem.id);
         ajax.start();
-    }
 };
 
 /**
