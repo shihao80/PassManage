@@ -168,7 +168,7 @@ PassInstant.openPassInstantDetail = function () {
 PassInstant.delete = function (thisObj) {
     var passId = $(thisObj).parents("tr").find(".laytable-cell-1-0-0").text();
         var ajax = new $ax(Feng.ctxPath + "/passInstant/delete/"+passId, function (data) {
-            Feng.success("删除成功!");
+            window.alert("删除成功!");
             PassInstant.table.refresh();
         }, function (data) {
             Feng.error("删除失败!" + data.responseJSON.message + "!");
