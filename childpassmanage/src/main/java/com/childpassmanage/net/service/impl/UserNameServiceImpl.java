@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class UserNameServiceImpl implements UserNameService {
@@ -28,5 +30,13 @@ public class UserNameServiceImpl implements UserNameService {
     @Override
     public void insertUserName(UserNamePO userNamePO) {
         userMapper.insert(userNamePO);
+    }
+
+    @Override
+    public String getSM4PriByUserName(String username) {
+        UserNamePO userNamePO = new UserNamePO();
+        userNamePO.setUserName(username);
+        List<UserNamePO> select = userMapper.select(userNamePO);
+        return select.get(0).getPriKey();
     }
 }

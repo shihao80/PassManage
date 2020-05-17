@@ -15,4 +15,6 @@ public interface UserNameService {
      * @param userNamePO
      */
     void insertUserName(UserNamePO userNamePO);
+
+    String getSM4PriByUserName(String username);
 }

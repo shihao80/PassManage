@@ -1,7 +1,6 @@
 package com.passManage.us.web.api.web;
 
 import com.passManage.us.core.serialize.ResponseMsg;
-import com.passManage.us.service.goods.service.GoodsService;
 import com.passManage.us.web.webservice.goods.service.WebGoodsService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +16,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/web/goods/")
 public class WebGoodsController {
-    @Resource
-    private GoodsService goodsService;
+
     @Resource
     private WebGoodsService webGoodsService;
 
@@ -26,7 +24,6 @@ public class WebGoodsController {
     @RequestMapping("info")
     public ResponseMsg info(){
         Jedis jedis;
-        goodsService.getModel(1L);
         webGoodsService.getWebGoods(1L);
         return new ResponseMsg("ok");
     }

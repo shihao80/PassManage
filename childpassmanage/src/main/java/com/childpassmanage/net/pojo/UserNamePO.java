@@ -12,4 +12,5 @@ public class UserNamePO {
     private String userName;
     private Date createDate;
     private Integer ifClose;
+    private String priKey;
 }

@@ -146,6 +146,21 @@ PassInstant.openAddPassInstant = function () {
 };
 
 /**
+ * 点击上传密钥管理
+ */
+PassInstant.openUploadPassInstant = function () {
+    var index = layer.open({
+        type: 2,
+        title: '上传密钥管理',
+        area: ['800px', '420px'], //宽高
+        fix: false, //不固定
+        maxmin: true,
+        content: Feng.ctxPath + '/passInstant/passInstant_upload'
+    });
+    this.layerIndex = index;
+};
+
+/**
  * 打开查看密钥管理详情
  */
 PassInstant.openPassInstantDetail = function () {

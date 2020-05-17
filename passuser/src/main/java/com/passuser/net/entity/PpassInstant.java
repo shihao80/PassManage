@@ -28,7 +28,7 @@ public class PpassInstant implements Serializable{
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
     private String passCreatetime;//密钥上传时间
     private Integer passUserid;//密钥使用者
-
+    private String username;
     
     public Integer getPassId(){
         return passId;

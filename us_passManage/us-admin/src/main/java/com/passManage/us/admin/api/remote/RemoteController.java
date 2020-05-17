@@ -111,12 +111,41 @@ public class RemoteController {
         List<PpassInstant> perPass = ppassInstantService.getModelList(hashMap);
         String sessionKey = redisUtils.opsForValue().get(username);
         String sm4Key= "";
+        R ok = R.ok();
         if(perPass.get(0).getPassType().equals("SM2")){
             sm4Key = Sm4Util.encryptEcb(sessionKey, "pubKey:"+perPass.get(0).getPassChildfir()+"\n\npriKey:"+perPass.get(0).getPassChildsec());
-        }else{
+            ok.put("keydata",sm4Key);
+            ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"SM2"));
+            ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
+            return ok;
+        }else if(perPass.get(0).getPassType().equals("SM4")){
             sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+            ok.put("keydata",sm4Key);
+            ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"SM4"));
+            ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
+            return ok;
+        }else if(perPass.get(0).getPassType().equals("AES")){
+            sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+            ok.put("keydata",Sm4Util.encryptEcb(sessionKey,sm4Key));
+            ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"AES"));
+            ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
+            return ok;
+        }else if(perPass.get(0).getPassType().equals("DES")){
+            sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
+            ok.put("keydata",sm4Key);
+            ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"DES"));
+            ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
+            return ok;
+        }else if(perPass.get(0).getPassType().equals("RSA")){
+            sm4Key = Sm4Util.encryptEcb(sessionKey, "pubKey:"+perPass.get(0).getPassChildfir()+"\n\npriKey:"+perPass.get(0).getPassChildsec());
+            ok.put("keydata",sm4Key);
+            ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"RSA"));
+            ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
+            return ok;
+        }else {
+            return ok.put("keydata","");
         }
-        return R.ok().put("keydata",sm4Key);
+
     }
 
     @RequestMapping(value = "/updateKey/{keyId}/{username}",method = RequestMethod.GET)
