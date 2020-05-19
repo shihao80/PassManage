@@ -30,7 +30,7 @@ public class UserController {
     private RedisTemplate<String, String> redisTemplate;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginUserBySM4(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
+    public String loginUserBySM4(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) throws Exception {
         HashMap<String, String> hashMap = new HashMap<>();
         Gson gson = new Gson();
         hashMap.put("username", username);
@@ -49,11 +49,13 @@ public class UserController {
         Map<String ,Object> r = gson.fromJson(userPost, map.getClass());
         Boolean auth = (Boolean) r.get("auth");
         if (auth) {
+            String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getKeyPass/" + username, null, "keyPass");
             String token = tokenGenerator.generate(username, password);
             CookieUtils.setCookie(request,response,"Authorization", token);
             response.setHeader("Authorization", token);
             redisTemplate.opsForValue().set(token, username);
             redisTemplate.opsForValue().set(token+username,System.currentTimeMillis()+"");
+            redisTemplate.opsForValue().set(username+token,keyPass);
         }
         if (auth) {
             return "/PassInstant/passInstant/passInstant.html";
@@ -93,15 +95,6 @@ public class UserController {
         return "/system/user/user_changPwd";
     }
 
-//    /**
-//     * 添加用户
-//     */
-//    @RequestMapping("/addUser")
-//    public String addUser(@RequestParam("username") String username, @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
-//
-//        this.userService.insert(UserFactory.createUser(user));
-//        return SUCCESS_TIP;
-//    }
 
     /**
      * 修改密码
@@ -132,11 +125,14 @@ public class UserController {
      * 用户注册
      */
     @RequestMapping(value = "register",method = RequestMethod.POST)
-    public String register(@RequestParam("username")String username,@RequestParam("password")String password) throws Exception {
+    public String register(@RequestParam("username")String username,@RequestParam("password")String password,@RequestParam("keypass")String keypass) throws Exception {
         Map<String,String> hashMap = new HashMap<>();
         hashMap.put("username",username);
         hashMap.put("password",password);
+        Map<String,String> keyPass = new HashMap<>();
+        keyPass.put("keyPass",keypass);
         String flag = resolveResponUtils.getPostResponseData("http://localhost:18088/us-admin/remote/register/", hashMap, "flag");
+        resolveResponUtils.getPostResponseData("http://localhost:18087/remote/savekeypass/"+username, keyPass, "flag");
         return flag.equals("true")?"redirect:/login":"404.html";
     }
 }

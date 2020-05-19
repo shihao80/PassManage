@@ -81,6 +81,11 @@ public class KeyController {
     public String generateKeyAndUpload(PpassInstant ppassInstant, HttpServletRequest request) throws Exception {
         String passType = ppassInstant.getPassType();
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
+        return addNewKeyByData(ppassInstant, request, passType);
+
+    }
+
+    private String addNewKeyByData(PpassInstant ppassInstant, HttpServletRequest request, String passType) throws Exception {
         switch (passType) {
             case "SM4":
                 Map<String, String> SM4flag = generateSM4Key(ppassInstant, request);
@@ -105,7 +110,6 @@ public class KeyController {
             default:
                 return "404.html";
         }
-
     }
 
     private Map<String, String> generateSM2key(PpassInstant ppassInstant, HttpServletRequest request) throws Exception {
@@ -184,8 +188,16 @@ public class KeyController {
     public String updateKey(@PathVariable("keyId") String keyId, HttpServletRequest request) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String username = redisTemplate.opsForValue().get(token);
-        String flag = updateByKeyId(keyId, username);
-        return flag.equals("true") ? "/passInstant" : "404.html";
+        Map<String, String> keyDataMap = getKeyDataMap(keyId, username);
+        String keytype = keyDataMap.get("keytype");
+        deleteByKeyId(keyId,username);
+        PpassInstant ppassInstant = new PpassInstant();
+        ppassInstant.setPassType(keytype);
+        ppassInstant.setPassId(Integer.parseInt(keyId)+1);
+        ppassInstant.setPassName(keyId+" update key");
+        ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollMon(new Date(),1),"yyyy-MM-dd"));
+        ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
+        return generateKeyAndUpload(ppassInstant,request);
     }
 
     @RequestMapping("delete/{keyId}")
@@ -301,11 +313,7 @@ public class KeyController {
     }
 
     private String downloadKeyByKeyId(String keyId, String username,String qianyiUser) throws Exception {
-        List<String> keyStr = new ArrayList<>();
-        keyStr.add("keydata");
-        keyStr.add("keytype");
-        keyStr.add("keyId");
-        Map<String, String> getKeyData = resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/getKeyById/" + keyId + "/" + username, null, keyStr);
+        Map<String, String> getKeyData = getKeyDataMap(keyId, username);
         String keydata = getKeyData.get("keydata");
         if (keydata.contains("pubKey:")) {
             String[] split = keydata.split("pubKey:");
@@ -337,10 +345,18 @@ public class KeyController {
         return keyJson;
     }
 
+    private Map<String, String> getKeyDataMap(String keyId, String username) throws Exception {
+        List<String> keyStr = new ArrayList<>();
+        keyStr.add("keydata");
+        keyStr.add("keytype");
+        keyStr.add("keyId");
+        return resolveResponUtils.getGetResponseDecryptData("http://localhost:18088/us-admin/remote/getKeyById/" + keyId + "/" + username, null, keyStr);
+    }
+
     private Map<String, String> resolveSetSM2PpassInstantById(String keyId, PpassInstant ppassInstant, HttpServletRequest request, Map<String, String> key) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String userName = redisTemplate.opsForValue().get(token);
-        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        String postJson = getKeyPostBody(ppassInstant, key, userName,token);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
         return resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
@@ -349,33 +365,35 @@ public class KeyController {
     private Map<String, String> resolveSetPpassInstantById(String keyId, PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String userName = redisTemplate.opsForValue().get(token);
-        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        String postJson = getKeyPostBody(ppassInstant, key, userName, token);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
         return resolveResponUtils.getPostJsonResponseDecryptData("http://localhost:18088/us-admin/remote/keyUploadJson/" + keyId + "/" + userName, postJson, strList);
     }
 
-    private String getKeyPostBody(PpassInstant ppassInstant, Map<String, String> key, String userName) throws Exception {
-        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + key.get("pubKey").length() + "/" + userName + "/" + ppassInstant.getPassId(), null, "random");
-        String privateKeyStr = (key.get("priKey"));
-        String publicKeyStr = (key.get("pubKey"));
+    private String getKeyPostBody(PpassInstant ppassInstant, Map<String, String> key, String userName, String token) throws Exception {
+        String keyData = redisTemplate.opsForValue().get(userName+token);
+        String keyByPass = ThroughUserkey.getKeyByPass(keyData);
+        byte[] privateKey = AESUtil.encrypt(key.get("priKey"), keyByPass);
+        byte[] publicKey = AESUtil.encrypt(key.get("pubKey"), keyByPass);
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
         ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31), "yyyy-MM-dd"));
-        ppassInstant.setPassLength(privateKeyStr.length());
-        ppassInstant.setPassChildfir(privateKeyStr);
-        ppassInstant.setPassChildsec(publicKeyStr);
+        ppassInstant.setPassLength(new String(privateKey).length());
+        ppassInstant.setPassChildfir(new String(privateKey));
+        ppassInstant.setPassChildsec(new String(publicKey));
         Gson gson = new Gson();
         return gson.toJson(ppassInstant);
     }
 
-    private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName) throws Exception {
-        String random = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + key.length() + "/" + userName + "/" + ppassInstant.getPassId(), null, "random");
-        byte[] privateKey = XORUtils.encrypt(key.getBytes(), random.getBytes());
-        String privateKeyStr = new String(privateKey);
+    private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName, String token) throws Exception {
+        String keyData = redisTemplate.opsForValue().get(userName+token);
+        String keyByPass = ThroughUserkey.getKeyByPass(keyData);
+        byte[] encrypt = AESUtil.encrypt(key, keyByPass);
+        String priKeyStr = new String(encrypt);
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
         ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31), "yyyy-MM-dd"));
-        ppassInstant.setPassLength(privateKeyStr.length());
-        ppassInstant.setPassChildfir(privateKeyStr);
+        ppassInstant.setPassLength(key.length());
+        ppassInstant.setPassChildfir(priKeyStr);
         Gson gson = new Gson();
         return gson.toJson(ppassInstant);
     }
@@ -393,7 +411,7 @@ public class KeyController {
     private Map<String, String> resolveSetPpassInstant(@ModelAttribute PpassInstant ppassInstant, HttpServletRequest request, String key) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String userName = redisTemplate.opsForValue().get(token);
-        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        String postJson = getKeyPostBody(ppassInstant, key, userName, token);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
         strList.add("keyId");
@@ -404,7 +422,7 @@ public class KeyController {
     private Map<String, String> resolveSetPpassInstant(@ModelAttribute PpassInstant ppassInstant, HttpServletRequest request, Map<String, String> key) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String userName = redisTemplate.opsForValue().get(token);
-        String postJson = getKeyPostBody(ppassInstant, key, userName);
+        String postJson = getKeyPostBody(ppassInstant, key, userName,token);
         List<String> strList = new ArrayList<>();
         strList.add("flag");
         strList.add("keyId");
