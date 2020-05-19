@@ -1,0 +1,40 @@
+<body>
+<form id="formPost">
+    <label for="username">迁移对象</label>
+    <input type="text" value="" name="username" id="username">
+    <input type="button" onclick="downloadPass(this)" value="下载">
+</form>
+</body>
+<script>
+    function downloadPass() {
+        var url = "/passInstant/download/"
+        var items = '[[${ppassId}]]';
+        url = url + items;
+        //提交信息
+        var form = document.getElementById('formPost');
+        form.setAttribute("action", url);
+        form.setAttribute("method", "post");
+        form.submit();
+    }
+</script>
+<!-- 全局js -->
+<script src="/static/js/jquery.min.js?v=2.1.4"></script>
+<script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+<script src="/static/js/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="/static/js/plugins/validate/bootstrapValidator.min.js"></script>
+<script src="/static/js/plugins/validate/zh_CN.js"></script>
+<script src="/static/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js"></script>
+<script src="/static/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="/static/js/plugins/bootstrap-treetable/bootstrap-treetable.js"></script>
+<script src="/static/js/plugins/layer/layer.js"></script>
+<script src="/static/js/plugins/chosen/chosen.jquery.js"></script>
+<script src="/static/js/plugins/iCheck/icheck.min.js"></script>
+<script src="/static/js/plugins/laydate/laydate.js"></script>
+<script src="/static/js/plugins/webuploader/webuploader.min.js"></script>
+<script src="/static/js/common/ajax-object.js"></script>
+<script src="/static/js/common/bootstrap-table-object.js"></script>
+<script src="/static/js/common/tree-table-object.js"></script>
+<script src="/static/js/common/web-upload-object.js"></script>
+<script src="/static/js/common/ztree-object.js"></script>
+<script src="/static/js/common/Feng.js"></script>

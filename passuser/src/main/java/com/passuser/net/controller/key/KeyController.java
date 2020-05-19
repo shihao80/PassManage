@@ -156,10 +156,10 @@ public class KeyController {
     @RequestMapping("download/{keyId}")
     @AuthToken
     @ResponseBody
-    public String download(@PathVariable("keyId") String keyId, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String download(@PathVariable("keyId") String keyId, Model model, HttpServletRequest request, HttpServletResponse response,@RequestParam("username")String qianyiUser) throws Exception {
         String token = CookieUtils.getCookieValue(request, "Authorization");
         String username = redisTemplate.opsForValue().get(token);
-        String key = downloadKeyByKeyId(keyId, username);
+        String key = downloadKeyByKeyId(keyId, username, qianyiUser);
         // 以流的形式下载文件。
         InputStream fis = new BufferedInputStream(new ByteArrayInputStream(key.getBytes("utf-8")));
         byte[] buffer = new byte[fis.available()];
@@ -257,7 +257,7 @@ public class KeyController {
             String keyStr = sb.toString();
             Gson gson = new Gson();
             PpassInstant ppassInstant = gson.fromJson(keyStr, PpassInstant.class);
-            String priKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM4Pri/" + ppassInstant.getUsername(), null, "priKey");
+            String priKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pri/" + ppassInstant.getUsername(), null, "priKey");
             String fir = SM2Util.decrypt(priKey, ppassInstant.getPassChildfir());
             ppassInstant.setPassChildfir(fir);
             if(ppassInstant.getPassChildsec()!=null){
@@ -278,6 +278,12 @@ public class KeyController {
         }
     }
 
+    @RequestMapping("/passInstant_download/{ppassId}")
+    public String passInstant_download(@PathVariable("ppassId")String ppassId,Model model){
+        model.addAttribute("ppassId",ppassId);
+        return PREFIX + "passInstant_download.html";
+    }
+
     private String deleteByKeyId(String keyId, String username) throws Exception {
         List<String> flagList = new ArrayList<>();
         flagList.add("flag");
@@ -294,7 +300,7 @@ public class KeyController {
         return flag;
     }
 
-    private String downloadKeyByKeyId(String keyId, String username) throws Exception {
+    private String downloadKeyByKeyId(String keyId, String username,String qianyiUser) throws Exception {
         List<String> keyStr = new ArrayList<>();
         keyStr.add("keydata");
         keyStr.add("keytype");
@@ -306,14 +312,14 @@ public class KeyController {
             String[] split1 = split[1].split("priKey:");
             String pubKeyStr = new String(split1[0].getBytes());
             String priKeyStr = new String(split1[1].getBytes());
-            String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM4Pub/" + username, null, "pubKey");
+            String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pub/" + qianyiUser, null, "pubKey");
             String pubKeyEnc = SM2Util.encrypt(keyPubKey, pubKeyStr);
             String priKeyEnc = SM2Util.encrypt(keyPubKey, priKeyStr);
             PpassInstant ppassInstant = new PpassInstant();
             ppassInstant.setPassChildfir(pubKeyEnc);
             ppassInstant.setPassChildsec(priKeyEnc);
             ppassInstant.setPassType(getKeyData.get("keytype"));
-            ppassInstant.setUsername(username);
+            ppassInstant.setUsername(qianyiUser);
             ppassInstant.setPassId(Integer.parseInt(getKeyData.get("keyId")));
             Gson gson = new Gson();
             String keyJson = gson.toJson(ppassInstant);

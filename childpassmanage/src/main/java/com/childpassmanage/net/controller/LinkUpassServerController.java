@@ -51,14 +51,14 @@ public class LinkUpassServerController {
         userNameService.insertUserName(userNamePO);
     }
 
-    @RequestMapping("/remote/getSM4Pub/{username}")
+    @RequestMapping("/remote/getSM2Pub/{username}")
     @ResponseBody
     public R getSM4Pub(@PathVariable("username")String username){
         String pubKey =sm4PubService.getSM4PubByUserName(username);
         return R.ok().put("pubKey", pubKey);
     }
 
-    @RequestMapping("/remote/getSM4Pri/{username}")
+    @RequestMapping("/remote/getSM2Pri/{username}")
     @ResponseBody
     public R getSM4Pri(@PathVariable("username")String username){
         String pubKey =userNameService.getSM4PriByUserName(username);

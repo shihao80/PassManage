@@ -76,11 +76,18 @@ PassInstant.initload = function () {
  * 下载密钥
  */
 PassInstant.downloadPassInstant = function(thisObj) {
+    this.layerIndex = index;
     var passId = $(thisObj).parents("tr").find(".laytable-cell-1-0-0").text();
-    //提交信息
-    var url = "/passInstant/download/"+passId;
-    var form = $("<form></form>").attr("action", url).attr("method", "post");
-    form.appendTo('body').submit().remove();
+    var index = layer.open({
+        type: 2,
+        title: '下载密钥',
+        area: ['800px', '420px'], //宽高
+        fix: false, //不固定
+        maxmin: true,
+        content: Feng.ctxPath + '/passInstant/passInstant_download/'+passId
+    });
+
+
 }
 /**
  * 更新密钥
