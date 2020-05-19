@@ -133,12 +133,14 @@ PassInstantInfoDlg.addSubmit = function () {
     var ajax = new $ax("/passInstant/add", function (data) {
         Feng.success("添加成功!");
         window.parent.PassInstant.table.refresh();
-        PassInstantInfoDlg.close();
     }, function (data) {
+        PassInstantInfoDlg.close();
         Feng.error("添加失败!" + data.responseJSON.message + "!");
     });
     ajax.set(this.passInstantInfoData);
+    PassInstantInfoDlg.close();
     ajax.start();
+
 }
 
 /**
@@ -152,8 +154,9 @@ PassInstantInfoDlg.editSubmit = function () {
     //提交信息
     var ajax = new $ax(Feng.ctxPath + "/passInstant/update", function (data) {
         Feng.success("修改成功!");
-        window.parent.PassInstant.table.refresh();
         PassInstantInfoDlg.close();
+        window.parent.PassInstant.table.refresh();
+
     }, function (data) {
         Feng.error("修改失败!" + data.responseJSON.message + "!");
     });

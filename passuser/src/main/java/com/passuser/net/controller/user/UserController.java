@@ -55,7 +55,6 @@ public class UserController {
             response.setHeader("Authorization", token);
             redisTemplate.opsForValue().set(token, username);
             redisTemplate.opsForValue().set(token+username,System.currentTimeMillis()+"");
-            redisTemplate.opsForValue().set(username+token,keyPass);
         }
         if (auth) {
             return "/PassInstant/passInstant/passInstant.html";

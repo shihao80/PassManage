@@ -148,6 +148,7 @@ PassInstant.openAddPassInstant = function () {
         fix: false, //不固定
         maxmin: true,
         content: Feng.ctxPath + '/passInstant/passInstant_add'
+
     });
     this.layerIndex = index;
 };
