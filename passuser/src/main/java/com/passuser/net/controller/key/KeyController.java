@@ -314,7 +314,7 @@ public class KeyController {
     }
 
     private String downloadKeyByKeyId(String keyId, String username,String qianyiUser) throws Exception {
-        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + username + "/" + keyId, null, "random");
+        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getKeyPass/" + username , null, "keyPass");
         Map<String, String> getKeyData = getKeyDataMap(keyId, username);
         String keydata = getKeyData.get("keydata");
         if (keydata.contains("pubKey:")) {
@@ -323,8 +323,8 @@ public class KeyController {
             String pubKeyStr = new String(split1[0].getBytes());
             String priKeyStr = new String(split1[1].getBytes());
             String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pub/" + qianyiUser, null, "pubKey");
-            String pubKey = Sm4Util.encryptEcb(keyPass, pubKeyStr);
-            String priKey = Sm4Util.encryptEcb(keyPass, priKeyStr);
+            String pubKey = Sm4Util.decryptEcb(keyPass, pubKeyStr);
+            String priKey = Sm4Util.decryptEcb(keyPass, priKeyStr);
             String pubKeyEnc = SM2Util.encrypt(keyPubKey, pubKey);
             String priKeyEnc = SM2Util.encrypt(keyPubKey, priKey);
             PpassInstant ppassInstant = new PpassInstant();
@@ -339,7 +339,7 @@ public class KeyController {
         }
         String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pub/" + username, null, "pubKey");
         String keyStrs = new String(keydata.getBytes());
-        String keyEnc = Sm4Util.encryptEcb(keyPubKey,keyStrs);
+        String keyEnc = Sm4Util.decryptEcb(keyPubKey,keyStrs);
         PpassInstant ppassInstant = new PpassInstant();
         ppassInstant.setPassChildfir(keyEnc);
         ppassInstant.setPassType(getKeyData.get("keytype"));
@@ -376,9 +376,11 @@ public class KeyController {
     }
 
     private String getKeyPostBody(PpassInstant ppassInstant, Map<String, String> key, String userName, String token) throws Exception {
-        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + userName + "/" + ppassInstant.getPassId(), null, "random");
+        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getKeyPass/" + userName , null, "keyPass");
         String privateKey = Sm4Util.encryptEcb(keyPass, key.get("priKey"));
         String publicKey = Sm4Util.encryptEcb(keyPass, key.get("pubKey"));
+        key.put("priKey",privateKey);
+        key.put("pubKey",publicKey);
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
         ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31), "yyyy-MM-dd"));
         ppassInstant.setPassLength(new String(privateKey).length());

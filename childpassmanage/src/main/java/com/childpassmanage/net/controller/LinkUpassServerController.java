@@ -106,6 +106,8 @@ public class LinkUpassServerController {
         hashMap.put("f[2]", keyPassPO1.getF2());
         hashMap.put("p", keyPassPO1.getP());
         long combine = Shamir.combine(hashMap);
-        return R.ok().put("keyPass",combine);
+        String keyByPass = ThroughUserkey.getKeyByPass(combine+"");
+        return R.ok().put("keyPass",keyByPass);
     }
+
 }
