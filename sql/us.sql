@@ -11,7 +11,7 @@
  Target Server Version : 50646
  File Encoding         : 65001
 
- Date: 17/05/2020 14:09:19
+ Date: 20/05/2020 09:19:31
 */
 
 SET NAMES utf8mb4;
@@ -38,9 +38,20 @@ CREATE TABLE `p_pass_instant`  (
 -- ----------------------------
 -- Records of p_pass_instant
 -- ----------------------------
+INSERT INTO `p_pass_instant` VALUES (5344, '5343 update key', 32, 'SM4', 'NN�D�\"2�<o���H�&nJ������J\Z%�������jq� N', NULL, NULL, '2020-06-19', '2020-05-19', '22');
+INSERT INTO `p_pass_instant` VALUES (9569, 'passRSA', 868, 'RSA', 'MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAMBRcNNsJdX/gfNPCXnVIGxoTORN\r\njm++dBjsaJnMoX5bWHOmteggsJ647ObgwreyFDj2cZB2gIRRWfafz0QmeV4U+YPFIELWvZTqSEcA\r\naxpX7jI19GpzA6udCPUrcWpKX8i98sD1PZglSCs9a7boEyiuQCiXojd4CaQbc/qHSKC5AgMBAAEC\r\ngYBt/OXC9KH67oL6jORFej9t4ITBOR3SCKFLM8Fq3F4r7r/6fIiidjesvuQ18qtJ9Z2dKkyuqyc7\r\nBW+nHaSjPEHCL/IEzPb201XyG46+M2R7WCVGAWvrGVIxTu4YwMRLxmlUBKKw4ryiT+nvqKKiIUxf\r\nUUgTc6J7Y/qXa3gH7ensEQJBAOIuYk4es+RM1tuc/Z8IxmDDggwqbHq+q8yYgIgVOXaVNUdkufzN\r\nJYn+jWmJmaKlXkqQwavHQZLQF9axXeUoGfUCQQDZrC2mYacjJcka4eNpmlf6MfKRXJHjY0ld9O2Y\r\nAhPA4oM/pj5I5QRilQfnCG7WSR2MblcOkQR0P27KEwpr0J01AkBi2ysUQc8WZY8zBXbEX6109X6N\r\nmq03KMcl8TGcSMqIzcYvohK4L2HM4nkkO4Pu1qBTrtk3HyvF4zXIHFWRpulRAkBd1rFTYhPovhhl\r\ng25Dj2tQDApTikHGcn4liDqJZpPXeo80eFmvmTN7wF3IxsTpklmvub3EJNZzuwjrCqxacHPlAkAO\r\ny2uQGtU9IEUAkUH3oG5lOrBi/OyalJpRZQMPEiZ9tjj/C7GHG2nv/Eb1osa9JYPMQJfp38mh6Tlh\r\n1uFEpW7j\r\n', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCZ6E6PEuGeowjLJCzl0F6qR/UkMT0yEUyJumT+\r\nDPZ/o/sxlkuRkxStn3SUwIUGWygY82PtxMHajL7WyzUuHwQrRhd+TLO6s73H5hfeNFB7UMkkX8s/\r\nKr2P78gjqF9P8d8qQZ34i46W8LBS+ZU6C6kTEnuhbAYZWJO74G1u5dcgfQIDAQAB\r\n', NULL, '2020-06-19', '2020-05-19', '19');
+INSERT INTO `p_pass_instant` VALUES (12343, 'SM4', 32, 'SM4', 'R�%:�v���cX�?�e&���Px���\ZZ�\Z%�������jq� N', NULL, NULL, '2020-06-19', '2020-05-19', '22');
+INSERT INTO `p_pass_instant` VALUES (23413, 'GUANG YANG', 32, 'SM4', 'afb8bdce1d48a16a4a96a597fa7ac56d9620356da77125d707fa73f74206cdb3ed7c0b294103d61508764059de909822', NULL, NULL, '2020-06-19', '2020-05-19', '23');
+INSERT INTO `p_pass_instant` VALUES (123123, 'SM2TEST', 32, 'SM4', '7b4dd8b131ec735aa71e3f5fb685ee1ed09b8c4ef0de2bb2ade03b866ee36493b305123b9859264e5f03dfec64c94b84', NULL, NULL, '2020-06-19', '2020-05-19', '23');
 INSERT INTO `p_pass_instant` VALUES (123555, 'SM2', 64, 'SM2', 'e69576dc8b2bfa5b3432900d9d047e50eae96d206db59288c038aa5871154111', '03fa6198f0b8f38f19bb496ffc0ceb73c4f2c48949c4fbf866e46ebbd6ee17b1ad', NULL, '2020-06-17', '2020-05-17', '18');
 INSERT INTO `p_pass_instant` VALUES (123556, NULL, 66, 'SM2', '03fa6198f0b8f38f19bb496ffc0ceb73c4f2c48949c4fbf866e46ebbd6ee17b1ad', 'e69576dc8b2bfa5b3432900d9d047e50eae96d206db59288c038aa5871154111\n\n', NULL, '2020-06-17', '2020-05-17', '18');
+INSERT INTO `p_pass_instant` VALUES (234524, '234523 update key', 32, 'SM4', '1450308aef2150b94133dd26634d3a6218573c49eb211444186d1451be9edaf292dbef9a344e0a2d3efa62c81b0d947b', NULL, NULL, '2020-06-20', '2020-05-20', '25');
+INSERT INTO `p_pass_instant` VALUES (691515, 'SM4TEST', 32, 'SM4', 'f26450670f6b9f92708f5480f34142f5e33180077ac8b63aca172e6241909b06562fcaa1400f622a3557648c841137c6', NULL, NULL, '2020-06-19', '2020-05-19', '23');
+INSERT INTO `p_pass_instant` VALUES (1231231, 'GUANG YANG', 32, 'SM4', 'd7ba62d6dcbd5e97454ea07af0f52d9ed704b4932dfa3372b521e3b51807828b10bc5acba6202f31a30bf2853ac4c728', NULL, NULL, '2020-06-19', '2020-05-19', '23');
+INSERT INTO `p_pass_instant` VALUES (5616516, 'SM4', 32, 'SM4', '0aff4d6fdcfa513025ab1c8896b37f5e3f7ef3e2ab27a27a75185fe784a40cc298ce90121a7721f81d42d48f25210f8a', NULL, NULL, '2020-06-20', '2020-05-20', '24');
+INSERT INTO `p_pass_instant` VALUES (9549262, 'SM4TEST', 32, 'SM4', '`zD@��/S�~�asꮘ��\rX䇤�L��N�J\Z%�������jq� N', NULL, NULL, '2020-06-19', '2020-05-19', '22');
 INSERT INTO `p_pass_instant` VALUES (56165165, 'RSA', 868, 'RSA', 'MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAIits7jPUYTkNzOg24L2MV2VHsY3\r\n0W5ZK0twE0goCQlW4dZUmDaa5XzL7QE9459flxd0vc8dlrhOd9O0If1BBHuYXp/iIXjFOvRhXyus\r\n58ZfLlZjrl7noT9H9rHqa5DBXzkftkrhMxWHoDRd+mnYDZHFdWGgLXoPCM8WYPL147lPAgMBAAEC\r\ngYBQFf/l/UyV4qdZ0BpvfVRlslfq65AC6arNtCkIMbVBzK/dx4m9DTwEyPThsmLq4rcEnnoNnxfO\r\nfOQHn1f/LhayfTUlwFGAxlV6oVFG/EZQ1uOAQvTDXmm5QiQB5Sh9VmBsnphq6E+ehLtV+EipJZhR\r\nI4AWWyOGDEDbzbx+RvVCWQJBAMn509t3ChHMEp2zYK8q2Vbq9Rk+F1O4tFQWh1hOuqFJVVVPwvi5\r\nKX19qkEM5m1K+yYKS+iwf8TjMcts9rYWABsCQQCtPK2kyxPe+8/RypOn1OC7Mj8D6eGE7ZrW/Osr\r\n2k0wli+96fbQToSDZj8T1k+i/SfA5Vsevw4Ct1EhfEnS/wbdAkBEJWa1xZRALPqa+srET1DFYsEP\r\no0N7m/Y76N4BjY6qnHOONTszcEXvcVbgW9njRkk2rIKwH9z8MSu71yfmh8XBAkAu4pI4XIHnQo2P\r\nQN1PeezMnR+y5nSTrl7OuqrHNpDXin4nTw/udqGkkmKV8tWgzhUZPrm3i4u2Lnj1sBam1UC9AkBq\r\nDvSAyw6uBM9fb0ZdISfzKO6iPU6/PkDE0Xgx614TMUAfw6zqW+a56a+ruBmQhkenIy55zx37HfTQ\r\nyIUG83pI\r\n', 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDGVTeJ8P1ay0zauA1sEhMDiRASimfJa8mGHzKj\r\nNBH5QbCzw+M/IyyKBhoPU3B417EkDCSiOWsyQtynHLCMwxc6uyriUMLtJEgUT6WAOcYSnn8O1OMo\r\nZFdBnCCvFNxJXZPqsz3KTqhPrh4BN/WnrhzQR/NKDJE8uX48FrHFnD7D9wIDAQAB\r\n', NULL, '2020-06-17', '2020-05-17', '18');
+INSERT INTO `p_pass_instant` VALUES (123456785, 'SM4TEST', 32, 'SM4', '�� �]�m#�:&����������B)�� \Z%�������jq� N', NULL, NULL, '2020-06-19', '2020-05-19', '22');
 INSERT INTO `p_pass_instant` VALUES (987987987, '654654', 64, 'SM4', '730603020f767c090f78790078717d061912661a141b1a10681e131119116f19', NULL, NULL, '2021-02-16', '2020-04-21', '3');
 
 -- ----------------------------
@@ -65,8 +76,36 @@ CREATE TABLE `p_pass_old`  (
 -- Records of p_pass_old
 -- ----------------------------
 INSERT INTO `p_pass_old` VALUES (1, 'SM2TEST2', 66, 'SM2', 'YPS]\0\\X\0Y^FOALHAs. pu,&{\'()y+)+88729<3313l97l9oK', 'T	TVP	\rZWEFBIL\Z#/ \'*r&r/.).).{~79e5857<h48?g>jj', NULL, '2020-03-10', '2020-05-07', '3');
+INSERT INTO `p_pass_old` VALUES (5343, 'SM4', 32, 'SM4', 'R�~����B�5p�}f3�Ь\Z@�IWm25�L\Z%�������jq� N', NULL, NULL, '2020-06-19', '2020-05-19', '22');
 INSERT INTO `p_pass_old` VALUES (123456, 'SM2TEST', 132, 'SM2', '06040204555f07545a095a085d0807081e4743464048461d1c4d1a11454d4d1d2572707720252c287d7b292b29292f2d353f39306131363a6f3f353e343b6b364217', '570e0304010d02035c5b0c0e5d0d065f4c461612451c411c1c1c1b401d484f1d702d7170732770292f27292c2b2e2378366134303163306c6d6a6c3a3034396b', NULL, '2020-11-04', '2020-05-07', '3');
+INSERT INTO `p_pass_old` VALUES (234523, 'SM4TEST', 32, 'SM4', '73ba3efbb3e464e594d3fc0e6eedd483114c463eac7df30e755720b7792797efce3eb84d94f8a7ca83ca2af689726f4c', NULL, NULL, '2020-06-20', '2020-05-20', '25');
 INSERT INTO `p_pass_old` VALUES (5555555, 'SM4TEST', 32, 'SM4', 'wws	\r}xrbdao\Zo', NULL, NULL, '2020-06-07', '2020-05-07', '3');
+
+-- ----------------------------
+-- Table structure for p_passdata
+-- ----------------------------
+DROP TABLE IF EXISTS `p_passdata`;
+CREATE TABLE `p_passdata`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `keypass` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `dian0` int(255) NULL DEFAULT NULL,
+  `dian1` int(255) NULL DEFAULT NULL,
+  `dian2` int(255) NULL DEFAULT NULL,
+  `f0` int(255) NULL DEFAULT NULL,
+  `f1` int(255) NULL DEFAULT NULL,
+  `f2` int(255) NULL DEFAULT NULL,
+  `p` int(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of p_passdata
+-- ----------------------------
+INSERT INTO `p_passdata` VALUES (1, 'student46', '000000', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `p_passdata` VALUES (2, 'admin1', '123456', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `p_passdata` VALUES (3, 'yg9533', NULL, 97, 98, 60, 17936694, 94857061, 73571832, 126160379);
+INSERT INTO `p_passdata` VALUES (4, 'yg9534', NULL, 97, 79, 15, 120160, 1145, 181487, 246889);
 
 -- ----------------------------
 -- Table structure for p_random
@@ -78,7 +117,7 @@ CREATE TABLE `p_random`  (
   `random_str` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `key_iD` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of p_random
@@ -99,6 +138,20 @@ INSERT INTO `p_random` VALUES (41, 'yg9531', '9203212660137446621896533536189795
 INSERT INTO `p_random` VALUES (42, 'yg9531', '002556194548962672201093007382237710889686596521475282279016334220', 123555);
 INSERT INTO `p_random` VALUES (43, 'yg9531', '792304488043650608482724551163422605545776953071757848703588127587', 123555);
 INSERT INTO `p_random` VALUES (44, 'yg9531', '285364649474419199516345235060142068893117956176260161469069950027', 123556);
+INSERT INTO `p_random` VALUES (45, 'student95', '957949736725720920435042594272823322837916927268750810570660672461581035469292454120713025676919232824934352254369484928859058068127479340220969347508236999609407876593127221245783423008402471134846875591258827489440072797', 9569);
+INSERT INTO `p_random` VALUES (46, 'admin1', '���������9�$9�%���ݺ*�W��n��\'�z�b��Y4-����', 1231231);
+INSERT INTO `p_random` VALUES (47, 'admin1', '[�o��9�v�ȭ9�Qp9��!�y+ܤ�@��b��Y4-����', 691515);
+INSERT INTO `p_random` VALUES (48, 'admin1', '^��\r��R3*��,��׸$�0W���=1%��b��Y4-����', 123123);
+INSERT INTO `p_random` VALUES (49, 'admin1', 'F`��]�!����cEڝ�ʞ`�����׳�b��Y4-����', 23413);
+INSERT INTO `p_random` VALUES (50, 'yg9533', '����x�����m?p�wCm��\'ߺ��#Wʶb��Y4-����', 5616516);
+INSERT INTO `p_random` VALUES (51, 'yg9534', 'BE)� w<�x?ZSWXkd�����鸑�ǁE�b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (52, 'yg9534', '>C���v(<�H�H�p���F\n�[B$C���sB���b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (53, 'yg9534', '3d�Ï��䉴�f�o�\"9��U�Ͱ�4b7��b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (54, 'yg9534', '���ыX���Qli����ͯ�\\��|\\j9\\�b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (55, 'yg9534', '|�3�U~)�+t���]_g#*Q�/�@�<�S��P�b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (56, 'yg9534', 'R�uҗ�c;���%@l�c9:��q0�!����b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (57, 'yg9534', '�i��y37��?5Ml��Q��۬R\0��&�C�b��Y4-����', 234523);
+INSERT INTO `p_random` VALUES (58, 'yg9534', '3\r�F~�!-�Ԧ;eȲ�^oυ�ATK�2�+�S�b��Y4-����', 234524);
 
 -- ----------------------------
 -- Table structure for p_sm4pub
@@ -109,12 +162,19 @@ CREATE TABLE `p_sm4pub`  (
   `pubkey` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `username` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of p_sm4pub
 -- ----------------------------
 INSERT INTO `p_sm4pub` VALUES (1, '039fc72d0d61b1561f0058e224fe07634f7a56c977700697f389c3672338dc5388', 'yg9531');
+INSERT INTO `p_sm4pub` VALUES (2, '03127a23e1b49c10e1d52803ba9bb6567708c415106efdb1be99490c3d6361a25c', 'student95');
+INSERT INTO `p_sm4pub` VALUES (3, '03771defa59412531b5c65dc5862932a80179b3dbb28f866328ea49c2050c13728', 'student94');
+INSERT INTO `p_sm4pub` VALUES (4, '037e521117d24c1d9936d2b8964f7831852ca1852db7a766f121fe7fbf46e806fc', 'student45');
+INSERT INTO `p_sm4pub` VALUES (5, '03f271d9edbd777a0ba9ecd6c4908c1b4cb86bbcedbee3ba0ee9560f800704f225', 'student46');
+INSERT INTO `p_sm4pub` VALUES (6, '030a2c073f82a7a8b60c47cd4bf5cf8aa772814239df3a4f592778da642dc2a591', 'admin1');
+INSERT INTO `p_sm4pub` VALUES (7, '035df930f51c852f75c2e580aca205d5d47dace1ee9eb5b53bef665b30f2db37f1', 'yg9533');
+INSERT INTO `p_sm4pub` VALUES (8, '022e208bd83c09996d05290378a0daa2f1c4ca5ad2e6ebd348561c623071840340', 'yg9534');
 
 -- ----------------------------
 -- Table structure for p_username
@@ -127,7 +187,7 @@ CREATE TABLE `p_username`  (
   `if_close` int(11) NULL DEFAULT NULL,
   `pri_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of p_username
@@ -138,6 +198,13 @@ INSERT INTO `p_username` VALUES (3, 'student8', '2020-04-27', 0, NULL);
 INSERT INTO `p_username` VALUES (4, 'student9', '2020-04-27', 0, NULL);
 INSERT INTO `p_username` VALUES (5, 'student10', '2020-04-27', 0, NULL);
 INSERT INTO `p_username` VALUES (6, 'yg9531', '2020-05-17', 0, '4cfbc45658b39156f0c12a2ab0a18996953fd28a93e393628680d3c211c9cf58');
+INSERT INTO `p_username` VALUES (7, 'student95', '2020-05-19', 0, 'bfa4a3c16bb8bc61c8fb6460b7c3f88f107409a1b602c058c4d9b5a8290d671f');
+INSERT INTO `p_username` VALUES (8, 'student94', '2020-05-19', 0, '9a720eef4e6a9042898dc82165e4518a4040e58185c4e63181ab37123ff971f');
+INSERT INTO `p_username` VALUES (9, 'student45', '2020-05-19', 0, '408e816ccbd03423796add7b601c06e7dfa306a91ada6ce3d1862b8e664e9fd9');
+INSERT INTO `p_username` VALUES (10, 'student46', '2020-05-19', 0, 'eb98520db74974ca716d14e600ce58c62a1e9d707313bcd59ad7f027156153ef');
+INSERT INTO `p_username` VALUES (11, 'admin1', '2020-05-19', 0, 'eab2613061e127cb5731cc5407762df18420378e31dbd132620ff3da94416841');
+INSERT INTO `p_username` VALUES (12, 'yg9533', '2020-05-20', 0, '31785f02af912fad7604800e0421986e71de02fa4b46a159dd23382215b7b52e');
+INSERT INTO `p_username` VALUES (13, 'yg9534', '2020-05-20', 0, '422bf5e3e6b970238aafc6a4e2fb3ff8b7a930f156213d22b282c46068e3698');
 
 -- ----------------------------
 -- Table structure for sys_admin_user
@@ -162,7 +229,7 @@ CREATE TABLE `sys_admin_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_user_name`(`username`) USING BTREE,
   INDEX `s_a_r_id`(`role_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 19 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of sys_admin_user
@@ -181,6 +248,13 @@ INSERT INTO `sys_admin_user` VALUES (15, 'student9', '4995ec381d6071f48a60170c42
 INSERT INTO `sys_admin_user` VALUES (16, 'student10', 'e10adc3949ba59abbe56e057f20f883e', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, 0, 0, 1);
 INSERT INTO `sys_admin_user` VALUES (17, 'yg9530', 'badbdc3d248f1d599b08396e21811290', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
 INSERT INTO `sys_admin_user` VALUES (18, 'yg9531', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (19, 'student95', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (20, 'student94', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (21, 'student45', 'badbdc3d248f1d599b08396e21811290', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (22, 'student46', 'badbdc3d248f1d599b08396e21811290', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (23, 'admin1', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (24, 'yg9533', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
+INSERT INTO `sys_admin_user` VALUES (25, 'yg9534', '312ad832b9455b1acab776dc82b33cab', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 0, 0, 0, 1);
 
 -- ----------------------------
 -- Table structure for sys_global_permit_url

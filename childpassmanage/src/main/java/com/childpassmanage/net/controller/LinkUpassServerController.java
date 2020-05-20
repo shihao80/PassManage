@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class LinkUpassServerController {
@@ -76,7 +77,14 @@ public class LinkUpassServerController {
     @ResponseBody
     public R saveKeyPass(@PathVariable("username")String username,@RequestParam("keyPass")String keyPass){
         KeyPassPO keyPassPO = new KeyPassPO();
-        keyPassPO.setKeypass(keyPass);
+        Map<String, Long> split = Shamir.split(Integer.parseInt(keyPass));
+        keyPassPO.setDian0(split.get("dian[0]"));
+        keyPassPO.setDian1(split.get("dian[1]"));
+        keyPassPO.setDian2(split.get("dian[2]"));
+        keyPassPO.setF0(split.get("f[0]"));
+        keyPassPO.setF1(split.get("f[1]"));
+        keyPassPO.setF2(split.get("f[2]"));
+        keyPassPO.setP(split.get("p"));
         keyPassPO.setUsername(username);
         keyPassMapper.insert(keyPassPO);
         return R.ok().put("flag", "true");
@@ -88,6 +96,16 @@ public class LinkUpassServerController {
         KeyPassPO keyPassPO = new KeyPassPO();
         keyPassPO.setUsername(username);
         List<KeyPassPO> select = keyPassMapper.select(keyPassPO);
-        return R.ok().put("keyPass",select.get(0).getKeypass());
+        KeyPassPO keyPassPO1 = select.get(0);
+        Map<String ,Long> hashMap = new HashMap<>();
+        hashMap.put("dian[0]", keyPassPO1.getDian0());
+        hashMap.put("dian[1]", keyPassPO1.getDian1());
+        hashMap.put("dian[2]", keyPassPO1.getDian2());
+        hashMap.put("f[0]", keyPassPO1.getF0());
+        hashMap.put("f[1]", keyPassPO1.getF1());
+        hashMap.put("f[2]", keyPassPO1.getF2());
+        hashMap.put("p", keyPassPO1.getP());
+        long combine = Shamir.combine(hashMap);
+        return R.ok().put("keyPass",combine);
     }
 }

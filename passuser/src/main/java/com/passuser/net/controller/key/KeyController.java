@@ -337,13 +337,13 @@ public class KeyController {
             String keyJson = gson.toJson(ppassInstant);
             return keyJson;
         }
-        String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM4Pub/" + username, null, "pubKey");
+        String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pub/" + username, null, "pubKey");
         String keyStrs = new String(keydata.getBytes());
         String keyEnc = Sm4Util.encryptEcb(keyPubKey,keyStrs);
         PpassInstant ppassInstant = new PpassInstant();
         ppassInstant.setPassChildfir(keyEnc);
         ppassInstant.setPassType(getKeyData.get("keytype"));
-        ppassInstant.setUsername(username);
+        ppassInstant.setUsername(qianyiUser);
         Gson gson = new Gson();
         String keyJson = gson.toJson(ppassInstant);
         return keyJson;

@@ -3,10 +3,7 @@ package com.childpassmanage.net.controller;
 import com.childpassmanage.net.dao.KeyPassMapper;
 import com.childpassmanage.net.pojo.KeyPassPO;
 import com.childpassmanage.net.service.RandomService;
-import com.childpassmanage.net.utils.AESUtil;
-import com.childpassmanage.net.utils.R;
-import com.childpassmanage.net.utils.Sm4Util;
-import com.childpassmanage.net.utils.ThroughUserkey;
+import com.childpassmanage.net.utils.*;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class RandomStringController {
@@ -35,8 +34,17 @@ public class RandomStringController {
         KeyPassPO keyPassPO = new KeyPassPO();
         keyPassPO.setUsername(userName);
         List<KeyPassPO> select = keyPassMapper.select(keyPassPO);
-        String keypass = select.get(0).getKeypass();
-        String keyByPass = ThroughUserkey.getKeyByPass(keypass);
+        KeyPassPO keyPassPO1 = select.get(0);
+        Map<String ,Long> hashMap = new HashMap<>();
+        hashMap.put("dian[0]", keyPassPO1.getDian0());
+        hashMap.put("dian[1]", keyPassPO1.getDian1());
+        hashMap.put("dian[2]", keyPassPO1.getDian2());
+        hashMap.put("f[0]", keyPassPO1.getF0());
+        hashMap.put("f[1]", keyPassPO1.getF1());
+        hashMap.put("f[2]", keyPassPO1.getF2());
+        hashMap.put("p", keyPassPO1.getP());
+        long combine = Shamir.combine(hashMap);
+        String keyByPass = ThroughUserkey.getKeyByPass(combine+"");
         byte[] encryptSM4key = AESUtil.encrypt(sm4Key, keyByPass);
         Boolean flag = randomService.insertRandomStringByUserName(userName,new String(encryptSM4key),keyId);
         return flag ? r:R.error();
