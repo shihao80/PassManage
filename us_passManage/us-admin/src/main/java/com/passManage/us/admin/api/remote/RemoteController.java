@@ -126,7 +126,7 @@ public class RemoteController {
             return ok;
         }else if(perPass.get(0).getPassType().equals("AES")){
             sm4Key = Sm4Util.encryptEcb(sessionKey, perPass.get(0).getPassChildfir());
-            ok.put("keydata",Sm4Util.encryptEcb(sessionKey,sm4Key));
+            ok.put("keydata",sm4Key);
             ok.put("keytype",Sm4Util.encryptEcb(sessionKey,"AES"));
             ok.put("keyId",Sm4Util.encryptEcb(sessionKey,perPass.get(0).getPassId()+""));
             return ok;

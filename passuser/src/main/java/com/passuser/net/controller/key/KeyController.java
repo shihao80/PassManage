@@ -338,11 +338,12 @@ public class KeyController {
             return keyJson;
         }
         String keyPubKey = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getSM2Pub/" + username, null, "pubKey");
-        String keyStrs = new String(keydata.getBytes());
-        String keyEnc = Sm4Util.decryptEcb(keyPubKey,keyStrs);
+        String keyEnc = Sm4Util.decryptEcb(keyPass,keydata);
+        String encryptKey = SM2Util.encrypt(keyPubKey, keyEnc);
         PpassInstant ppassInstant = new PpassInstant();
-        ppassInstant.setPassChildfir(keyEnc);
+        ppassInstant.setPassChildfir(encryptKey);
         ppassInstant.setPassType(getKeyData.get("keytype"));
+        ppassInstant.setPassId(Integer.parseInt(getKeyData.get("keyId")));
         ppassInstant.setUsername(qianyiUser);
         Gson gson = new Gson();
         String keyJson = gson.toJson(ppassInstant);
@@ -391,7 +392,7 @@ public class KeyController {
     }
 
     private String getKeyPostBody(PpassInstant ppassInstant, String key, String userName, String token) throws Exception {
-        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/ranstr/" + userName + "/" + ppassInstant.getPassId(), null, "random");
+        String keyPass = resolveResponUtils.getGetResponseData("http://localhost:18087/remote/getKeyPass/" + userName , null, "keyPass");
         String priKeyStr = Sm4Util.encryptEcb(keyPass, key);
         ppassInstant.setPassCreatetime(DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss"));
         ppassInstant.setPassExpiry(DateFormatUtils.format(DateUtils.rollDay(new Date(), 31), "yyyy-MM-dd"));
